@@ -1,0 +1,90 @@
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\layout\AdminLayout.jsx:31: <div className="flex h-screen bg-linen">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\layout\AdminLayout.jsx:32: <aside className="w-64 bg-coffee text-white flex flex-col">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\layout\AdminLayout.jsx:34: <h1 className="font-serif text-2xl font-bold">Khatra Admin</h1>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\layout\AdminLayout.jsx:41: className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-coffee/80 hover:bg-coffee-soft hover:text-white transition-colors"
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\layout\AdminLayout.jsx:48: <div className="p-4 border-t border-coffee-soft">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\layout\AdminLayout.jsx:51: className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-coffee/80 hover:bg-coffee-soft hover:text-white transition-colors"
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\ConfirmDialog.jsx:23: <h3 className="font-serif text-lg font-semibold text-coffee mb-2">{title}</h3>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\ConfirmDialog.jsx:24: <p className="text-sm text-coffee/60 mb-6">{message}</p>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\DataTable.jsx:10: <div key={i} className="h-10 bg-coffee/5 rounded-lg animate-pulse" />
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\DataTable.jsx:19: <div className="k-card p-8 text-center text-coffee/40">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\DataTable.jsx:30: <tr className="bg-linen/70 border-b border-coffee/10">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\DataTable.jsx:32: <th key={col.key} className="px-4 py-3 text-left text-[11px] font-semibold uppercase tracking-[0.14em] text-toffee">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\DataTable.jsx:36: <th className="px-4 py-3 text-right text-[11px] font-semibold uppercase tracking-[0.14em] text-toffee">Actions</th>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\DataTable.jsx:39: <tbody className="divide-y divide-coffee/5">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\DataTable.jsx:41: <tr key={row.id} className="hover:bg-linen/30 transition cursor-pointer" onClick={() => onRowClick?.(row)}>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\DataTable.jsx:43: <td key={col.key} className="px-4 py-3 text-coffee">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\DataTable.jsx:48: <button className="text-bordeaux hover:underline text-sm font-medium">Edit</button>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\index.jsx:22: default: 'bg-coffee/10 text-coffee',
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\index.jsx:40: {hint && !error && <p className="mt-1 text-[11px] text-coffee/50">{hint}</p>}
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\index.jsx:50: <div key={i} className="h-4 bg-coffee/5 rounded-xl animate-pulse" />
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\index.jsx:68: <div key={t.id} className={`px-4 py-3 rounded-xl shadow-lg text-white text-sm font-medium animate-in slide-in-from-right ${t.type === 'error' ? 'bg-bordeaux' : 'bg-coffee'}`}>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\Input.jsx:8: {hint && !error && <p className="mt-1 text-[11px] text-coffee/50">{hint}</p>}
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\misc.jsx:8: <div key={i} className={cn('h-10 bg-coffee/5 rounded-lg animate-pulse', className)} />
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\misc.jsx:18: <h3 className="font-serif text-lg font-semibold text-coffee mb-1">{title}</h3>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\misc.jsx:19: <p className="text-sm text-coffee/50 mb-4">{description || 'Get started by creating your first record.'}</p>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\Modal.jsx:24: <h3 className="font-serif text-lg font-semibold text-coffee">{title}</h3>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\Modal.jsx:25: <button onClick={onClose} className="text-coffee/40 hover:text-coffee text-xl leading-none">&times;</button>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\Modal.jsx:29: <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-coffee/10">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\components\ui\Toast.jsx:24: t.type === 'error' ? 'bg-bordeaux' : 'bg-coffee'
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoriesPage.jsx:43: <h2 className="font-serif text-2xl font-bold mb-4">Categories</h2>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoriesPage.jsx:75: <a href="#" className="text-coffee hover:underline">Prev</a>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoriesPage.jsx:78: <a href="#" className="text-coffee hover:underline">1</a>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoriesPage.jsx:81: <a href="#" className="text-coffee hover:underline">2</a>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoriesPage.jsx:84: <a href="#" className="text-coffee hover:underline">Next</a>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoryFormPage.jsx:80: <h2 className="font-serif text-2xl font-bold">{id ? 'Edit Category' : 'New Category'}</h2>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoryFormPage.jsx:102: <label className="k-label text-sm font-medium text-coffee mb-1 block">Description</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoryFormPage.jsx:107: className="w-full px-3 py-2 rounded-xl border border-coffee/20 bg-linen/50 focus:outline-none focus:ring-1 focus:ring-bordeaux focus:border-bordeaux transition-all sm:text-sm h-24"
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoryFormPage.jsx:111: <label className="k-label text-sm font-medium text-coffee mb-1 block">Image</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoryFormPage.jsx:116: className="w-full px-3 py-2 rounded-xl border border-coffee/20 bg-linen/50 focus:outline-none focus:ring-1 focus:ring-bordeaux focus:border-bordeaux transition-all sm:text-sm"
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoryFormPage.jsx:134: <label htmlFor="active" className="text-sm font-medium text-coffee">Active</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\CategoryFormPage.jsx:137: <div className="pt-4 border-t border-coffee/10 flex justify-end gap-2">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\DashboardPage.jsx:50: <h2 className="text-2xl font-bold font-serif text-coffee">Dashboard</h2>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\DashboardPage.jsx:69: <h2 className="font-serif text-3xl font-bold text-coffee mb-2">Welcome back, {user?.firstName}</h2>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\DashboardPage.jsx:70: <p className="text-coffee/70 mb-8">Here is an overview of Khatra B2B Platform.</p>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\DashboardPage.jsx:75: <h3 className="text-lg font-medium text-coffee/80">{c.label}</h3>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\DashboardPage.jsx:76: <div className="text-4xl font-bold text-coffee mt-2 mb-4">{c.count}</div>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\FranchiseFormPage.jsx:80: <h2 className="font-serif text-2xl font-bold">{id ? 'Edit Franchise' : 'New Franchise'}</h2>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\FranchiseFormPage.jsx:97: <label className="text-sm font-medium text-coffee mb-1 block">Status</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\FranchiseFormPage.jsx:98: <select name="status" value={formData.status} onChange={handleChange} className="w-full px-3 py-2 rounded-xl border border-coffee/20 bg-linen/50">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\FranchiseFormPage.jsx:105: <div className="pt-4 border-t border-coffee/10 flex justify-end gap-2">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\FranchisesPage.jsx:53: <h2 className="font-serif text-2xl font-bold mb-4">Franchises</h2>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductFormPage.jsx:80: <h2 className="font-serif text-2xl font-bold">{id ? 'Edit Product' : 'New Product'}</h2>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductFormPage.jsx:89: <label className="text-sm font-medium text-coffee mb-1 block">Category</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductFormPage.jsx:90: <select name="categoryId" value={formData.categoryId} onChange={handleChange} required className="w-full px-3 py-2 rounded-xl border border-coffee/20 bg-linen/50">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductFormPage.jsx:97: <label className="text-sm font-medium text-coffee mb-1 block">Description</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductFormPage.jsx:98: <textarea name="description" value={formData.description} onChange={handleChange} className="w-full px-3 py-2 rounded-xl border border-coffee/20 bg-linen/50 h-24" />
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductFormPage.jsx:103: <label className="text-sm font-medium text-coffee mb-1 block">Images</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductFormPage.jsx:107: <label className="text-sm font-medium text-coffee mb-1 block">Status</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductFormPage.jsx:108: <select name="status" value={formData.status} onChange={handleChange} className="w-full px-3 py-2 rounded-xl border border-coffee/20 bg-linen/50">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductFormPage.jsx:115: <label htmlFor="featured" className="text-sm font-medium text-coffee">Featured</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductFormPage.jsx:117: <div className="pt-4 border-t border-coffee/10 flex justify-end gap-2">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\ProductsPage.jsx:54: <h2 className="font-serif text-2xl font-bold mb-4">Products</h2>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\StoreFormPage.jsx:82: <h2 className="font-serif text-2xl font-bold">{id ? 'Edit Store' : 'New Store'}</h2>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\StoreFormPage.jsx:97: <label className="text-sm font-medium text-coffee mb-1 block">Image</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\StoreFormPage.jsx:102: <label htmlFor="active" className="text-sm font-medium text-coffee">Active</label>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\StoreFormPage.jsx:104: <div className="pt-4 border-t border-coffee/10 flex justify-end gap-2">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\adminDashboard\StoresPage.jsx:52: <h2 className="font-serif text-2xl font-bold mb-4">Stores</h2>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\LoginPage.jsx:29: <div className="min-h-screen bg-linen flex items-center justify-center p-4">
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\LoginPage.jsx:32: <h1 className="text-3xl font-serif font-bold text-coffee">Khatra</h1>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\pages\LoginPage.jsx:33: <p className="text-coffee/60 text-sm mt-1">B2B Administration</p>
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\App.jsx:23: if (loading) return <div className="min-h-screen flex items-center justify-center bg-linen text-coffee">Loading...</div>;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\App.jsx:37: return <div className="min-h-screen flex items-center justify-center bg-linen text-coffee">Loading App...</div>;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:6: --coffee: #2A1E17;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:7: --coffee-soft: #3D2E24;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:8: --bordeaux: #5C1D24;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:9: --bordeaux-dark: #47161C;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:10: --toffee: #8C5A3C;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:11: --linen: #F5EFE6;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:12: --linen-dark: #EDE4D5;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:13: --caramel: #C5A06A;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:23: background: var(--linen);
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:24: color: var(--coffee);
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:28: h1, h2, h3, .font-serif {
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:56: @apply bg-white border border-coffee/10 rounded-2xl shadow-card;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:59: @apply block text-[11px] font-semibold uppercase tracking-[0.16em] text-toffee mb-2;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:62: @apply w-full rounded-xl border border-coffee/10 bg-linen/50 px-3.5 py-2.5 text-sm text-coffee outline-none transition focus:border-bordeaux focus:bg-white focus:ring-2 focus:ring-bordeaux/10 disabled:opacity-60;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:68: @apply k-btn bg-bordeaux text-white hover:bg-bordeaux-dark;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:71: @apply k-btn bg-white text-coffee border border-coffee/15 hover:border-coffee/30 hover:bg-linen;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:74: @apply k-btn text-toffee hover:bg-linen-dark/70 hover:text-coffee;
+C:\Users\saad\Documents\Projects\Khatra\Khatra_app\Admin_Dashboard\src\index.css:77: @apply k-btn bg-bordeaux/10 text-bordeaux hover:bg-bordeaux hover:text-white;
