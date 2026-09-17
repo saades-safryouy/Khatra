@@ -1,0 +1,10 @@
+const prisma = require('../config/database');
+const { AppError, toBool, clean } = require('../utils/helpers');
+const { deleteFile } = require('../middleware/upload');
+function validate(data, partial=false) { if (!partial || data.name !== undefined) { if (!String(data.name||'').trim()) throw new AppError('Franchise name is required',400); } if (!partial || data.slug !== undefined) { if (!String(data.slug||'').trim()) throw new AppError('Franchise slug is required',400); } }
+async function ensureUniqueSlug(slug, excludeId) { const found = await prisma.franchiseConcept.findUnique({ where: { slug } }); if (found && found.id !== excludeId) throw new AppError('Franchise slug already exists',409); }
+exports.publicList = () => prisma.franchiseConcept.findMany({ where: { active: true }, orderBy: [{ displayOrder: 'asc' }, { createdAt: 'asc' }] });
+exports.publicBySlug = async slug => { const item = await prisma.franchiseConcept.findFirst({ where: { slug, active: true } }); if (!item) throw new AppError('Franchise concept not found',404); return item; };
+exports.adminList = () => prisma.franchiseConcept.findMany({ orderBy: [{ displayOrder: 'asc' }, { createdAt: 'asc' }] });
+exports.adminById = async id => { const item = await prisma.franchiseConcept.findUnique({ where: { id: Number(id) } }); if (!item) throw new AppError('Franchise concept not found',404); return item; };
+exports.update = async (id,data) => { const existing = await exports.adminById(id); validate(data,true); if (data.slug) await ensureUniqueSlug(data.slug, existing.id); const updated = await prisma.franchiseConcept.update({ where: { id: existing.id }, data: clean({ name: data.name?.trim(), slug: data.slug?.trim(), shortDescription: data.shortDescription, description: data.description, image: data.image, whatsappMessage: data.whatsappMessage, active: data.active === undefined ? undefined : toBool(data.active), displayOrder: data.displayOrder === undefined ? undefined : Number(data.displayOrder) }) }); if (data.image && existing.image && data.image !== existing.image) deleteFile(existing.image); return updated; };

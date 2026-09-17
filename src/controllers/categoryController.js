@@ -1,0 +1,10 @@
+const service = require('../services/categoryService');
+const { asyncHandler, ok } = require('../utils/helpers');
+exports.publicList = asyncHandler(async (req,res)=>{ const r = await service.publicList(req.query); Array.isArray(r) ? ok(res,r) : ok(res,r.items,200,r.meta); });
+exports.publicBySlug = asyncHandler(async (req,res)=>ok(res, await service.publicBySlug(req.params.slug)));
+exports.publicById = asyncHandler(async (req,res)=>ok(res, await service.publicById(req.params.id)));
+exports.adminList = asyncHandler(async (req,res)=>{ const r = await service.adminList(req.query); Array.isArray(r) ? ok(res,r) : ok(res,r.items,200,r.meta); });
+exports.adminById = asyncHandler(async (req,res)=>ok(res, await service.adminById(req.params.id)));
+exports.create = asyncHandler(async (req,res)=>ok(res, await service.create(req.body), 201));
+exports.update = asyncHandler(async (req,res)=>ok(res, await service.update(req.params.id, req.body)));
+exports.remove = asyncHandler(async (req,res)=>ok(res, await service.remove(req.params.id)));

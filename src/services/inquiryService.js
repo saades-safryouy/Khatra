@@ -1,0 +1,10 @@
+const prisma = require('../config/database');
+const { AppError, isEmail, pagination, clean } = require('../utils/helpers');
+const validTypes = ['GENERAL','PARTNERSHIP','PRODUCT'];
+const validStatuses = ['NEW','CONTACTED','CLOSED'];
+function validateCreate(data) { if (!String(data.name||'').trim()) throw new AppError('Inquiry name is required',400); if (!isEmail(data.email)) throw new AppError('Valid inquiry email is required',400); if (!String(data.message||'').trim()) throw new AppError('Inquiry message is required',400); if (!validTypes.includes(data.type)) throw new AppError('Valid inquiry type is required',400); }
+exports.create = data => { validateCreate(data); return prisma.inquiry.create({ data: { type: data.type, name: data.name.trim(), company: data.company, email: data.email.trim(), phone: data.phone, message: data.message.trim() } }); };
+exports.adminList = async q => { const { page, limit, skip } = pagination(q); const where = {}; if (q.status) where.status = q.status; if (q.type) where.type = q.type; if (q.search) where.OR = [{ name: { contains: q.search } }, { company: { contains: q.search } }, { email: { contains: q.search } }, { message: { contains: q.search } }]; const [items,total] = await Promise.all([prisma.inquiry.findMany({ where, skip, take: limit, orderBy: { createdAt: 'desc' } }), prisma.inquiry.count({ where })]); return { items, meta: { page, limit, total, pages: Math.ceil(total/limit) } }; };
+exports.adminById = async id => { const item = await prisma.inquiry.findUnique({ where: { id: Number(id) } }); if (!item) throw new AppError('Inquiry not found',404); return item; };
+exports.update = async (id,data) => { await exports.adminById(id); if (data.status && !validStatuses.includes(data.status)) throw new AppError('Invalid inquiry status',400); return prisma.inquiry.update({ where: { id: Number(id) }, data: clean({ status: data.status }) }); };
+exports.remove = async id => { await exports.adminById(id); return prisma.inquiry.delete({ where: { id: Number(id) } }); };
