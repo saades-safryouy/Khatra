@@ -12,6 +12,8 @@ app.use(cors({
     'http://localhost:5173',
     'http://localhost:5174',
     'http://localhost:5175',
+    'http://localhost:5176',
+    'http://localhost:5177',
   ],
   credentials: true,
 }));
@@ -26,6 +28,7 @@ app.use('/api', require('./routes/locationRoutes'));
 app.use('/api', require('./routes/storeRoutes'));
 app.use('/api', require('./routes/franchiseRoutes'));
 app.use('/api', require('./routes/inquiryRoutes'));
+app.use('/api', require('./routes/translationRoutes'));
 app.use(notFound);
 app.use(errorHandler);
 module.exports = app;

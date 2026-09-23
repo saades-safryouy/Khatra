@@ -100,6 +100,8 @@ model Store {
   locationId    Int      @map("location_id") @db.UnsignedInt
   name          String   @db.VarChar(200)
   address       String   @db.VarChar(500)
+  latitude      Decimal(10, 8)? @map("latitude")
+  longitude     Decimal(11, 8)? @map("longitude")
   phone         String?  @db.VarChar(50)
   googleMapsUrl String?  @map("google_maps_url") @db.VarChar(1000)
   image         String?  @db.VarChar(500)
