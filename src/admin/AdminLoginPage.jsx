@@ -27,25 +27,24 @@ export function AdminLoginPage() {
   const isLocked = Boolean(lockedUntil && now < lockedUntil);
   const remaining = isLocked ? Math.ceil((lockedUntil - now) / 1000) : 0;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (isLocked) {
       setError(`Trop de tentatives échouées. Veuillez patienter ${remaining} secondes.`);
       return;
     }
 
-    const res = login(username, password);
-    if (res.success) {
-      return;
-    }
-
-    const nextAtt = attempts + 1;
-    setAttempts(nextAtt);
-    if (nextAtt >= 5) {
-      setLockedUntil(Date.now() + 60000);
-      setError('5 tentatives échouées. Compte temporairement verrouillé pendant 60s.');
-    } else {
-      setError(`Identifiants invalides (${nextAtt}/5 tentatives).`);
+    try {
+      await login(username, password);
+    } catch (err) {
+      const nextAtt = attempts + 1;
+      setAttempts(nextAtt);
+      if (nextAtt >= 5) {
+        setLockedUntil(Date.now() + 60000);
+        setError('5 tentatives échouées. Compte temporairement verrouillé pendant 60s.');
+      } else {
+        setError(err.message || `Identifiants invalides (${nextAtt}/5 tentatives).`);
+      }
     }
   };
 

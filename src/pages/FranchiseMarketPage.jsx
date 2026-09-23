@@ -81,7 +81,7 @@ export function FranchiseMarketPage() {
               </div>
             </div>
           </div>
-          <Link to="/contact" className="btn btn-primary">
+          <Link to="/contact?subject=Franchise%20Khatra%20Market" className="btn btn-primary">
             Parler de mon projet Khatra Market <ArrowRight s={16} />
           </Link>
         </div>

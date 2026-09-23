@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { DataProvider } from './context/DataContext';
+import { LanguageProvider } from './context/LanguageContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppFloating from './components/WhatsAppFloating';
@@ -42,6 +43,7 @@ function PublicLayout() {
 export function App() {
   return (
     <DataProvider>
+      <LanguageProvider>
       <ScrollToTop />
       <Toast />
       <Routes>
@@ -75,6 +77,7 @@ export function App() {
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
+      </LanguageProvider>
     </DataProvider>
   );
 }

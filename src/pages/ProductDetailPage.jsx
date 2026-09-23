@@ -1,24 +1,57 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import productsApi from '../services/productsApi';
+import { adaptProduct } from '../services/dataAdapters';
 import { ArrowLeft, Check, WhatsApp, ArrowRight } from '../components/Icons';
 import SEO from '../components/SEO';
 
 export function ProductDetailPage() {
   const { slug } = useParams();
-  const { products, settings } = useData();
+  const { products, settings, loading: contextLoading } = useData();
+  const [fetchedProduct, setFetchedProduct] = useState(null);
+  const [loadingDirect, setLoadingDirect] = useState(false);
+  const [selectedImg, setSelectedImg] = useState(null);
 
-  const product = products.find(p => p.slug === slug || p.id === slug);
+  const matchedProduct = products.find((p) => p.slug === slug || String(p.id) === String(slug));
+  const product = matchedProduct || fetchedProduct;
+
+  useEffect(() => {
+    if (!matchedProduct && slug) {
+      setLoadingDirect(true);
+      productsApi.getProductBySlug(slug)
+        .then((res) => {
+          if (res) setFetchedProduct(adaptProduct(res));
+        })
+        .catch(() => {
+          setFetchedProduct(null);
+        })
+        .finally(() => {
+          setLoadingDirect(false);
+        });
+    }
+  }, [matchedProduct, slug]);
+
+  if (contextLoading || loadingDirect) {
+    return (
+      <div className="container section" style={{ paddingTop: 'calc(var(--nav-h) + 60px)', textAlign: 'center' }}>
+        <p style={{ color: 'var(--dark-s)' }}>Chargement du produit...</p>
+      </div>
+    );
+  }
 
   if (!product) {
     return <Navigate to="/produits" replace />;
   }
 
-  const related = products.filter(p => p.id !== product.id && p.category === product.category).slice(0, 3);
+  const related = products
+    .filter((p) => p.id !== product.id && p.category === product.category)
+    .slice(0, 3);
 
   const waNum = settings?.whatsapp || '212661000000';
   const waMsg = `Bonjour Khatra, je souhaite obtenir des informations professionnelles et tarifs pour le produit : ${product.name}.`;
   const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waMsg)}`;
+  const currentImage = selectedImg || product.img;
 
   return (
     <div className="product-detail-page">
@@ -35,7 +68,30 @@ export function ProductDetailPage() {
 
       <div className="product-detail-wrap" style={{ paddingTop: 0 }}>
         <div className="product-detail-img">
-          <img src={product.img} alt={product.name} />
+          <img src={currentImage} alt={product.name} />
+          {product.images && product.images.length > 1 && (
+            <div style={{ display: 'flex', gap: '8px', marginTop: '12px', flexWrap: 'wrap' }}>
+              {product.images.map((im, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setSelectedImg(im)}
+                  style={{
+                    border: currentImage === im ? '2px solid var(--caramel)' : '1px solid #e5e7eb',
+                    borderRadius: '6px',
+                    overflow: 'hidden',
+                    width: '60px',
+                    height: '60px',
+                    padding: 0,
+                    cursor: 'pointer',
+                    background: 'transparent',
+                  }}
+                >
+                  <img src={im} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="product-detail-info">

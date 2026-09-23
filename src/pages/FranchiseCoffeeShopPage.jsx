@@ -81,7 +81,7 @@ export function FranchiseCoffeeShopPage() {
               </div>
             </div>
           </div>
-          <Link to="/contact" className="btn btn-primary">
+          <Link to="/contact?subject=Franchise%20Coffee%20Shop" className="btn btn-primary">
             Parler de mon projet Coffee Shop <ArrowRight s={16} />
           </Link>
         </div>

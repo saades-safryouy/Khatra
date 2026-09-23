@@ -4,7 +4,6 @@ import { useData } from '../../context/DataContext';
 import { Check, ArrowRight } from '../../components/Icons';
 
 export function ContactForm() {
-  const { showToast } = useData();
   const [searchParams] = useSearchParams();
 
   const [form, setForm] = useState(() => {
@@ -24,15 +23,42 @@ export function ContactForm() {
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState('');
+  const { submitInquiry, showToast } = useData();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    setErrorMsg('');
+
+    let type = 'GENERAL';
+    if (form.subject === 'Produits B2B') {
+      type = 'PRODUCT';
+    } else if (
+      form.subject === 'Franchise Coffee Shop' ||
+      form.subject === 'Franchise Khatra Market' ||
+      form.subject === 'Partenariat & Distribution'
+    ) {
+      type = 'PARTNERSHIP';
+    }
+
+    try {
+      if (submitInquiry) {
+        await submitInquiry({
+          name: form.name,
+          email: form.email,
+          phone: form.phone || undefined,
+          company: form.company || undefined,
+          message: form.message,
+          type,
+        });
+      }
       setSubmitted(true);
-      showToast('Votre message a bien été transmis. Notre équipe vous répondra sous 24h.');
-    }, 600);
+    } catch (err) {
+      setErrorMsg(err.message || 'Une erreur est survenue lors de l’envoi.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (submitted) {
@@ -129,6 +155,12 @@ export function ContactForm() {
             onChange={e => setForm({ ...form, message: e.target.value })}
           />
         </div>
+
+        {errorMsg && (
+          <div style={{ padding: '12px 16px', background: '#fee2e2', color: '#b91c1c', borderRadius: '8px', marginBottom: '20px', fontSize: '0.9rem' }}>
+            {errorMsg}
+          </div>
+        )}
 
         <button
           type="submit"

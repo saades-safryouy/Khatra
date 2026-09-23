@@ -5,14 +5,17 @@ import { ArrowRight, WhatsApp } from '../components/Icons';
 import SEO from '../components/SEO';
 
 export function ProductsPage() {
-  const { products, settings } = useData();
+  const { products, categories: backendCategories, settings, loading } = useData();
   const [activeCategory, setActiveCategory] = useState('Tout');
 
-  const categories = ['Tout', 'Café', 'Sirops', 'Bubbles'];
+  const categories = [
+    'Tout',
+    ...Array.from(new Set([...(backendCategories || []), ...products.map((p) => p.category)])).filter(Boolean),
+  ];
 
   const filtered = activeCategory === 'Tout'
     ? products
-    : products.filter(p => p.category === activeCategory);
+    : products.filter((p) => p.category === activeCategory || p.categorySlug === activeCategory.toLowerCase());
 
   const waNum = settings?.whatsapp || '212661000000';
   const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent("Bonjour Khatra, je souhaite recevoir le catalogue tarifaire professionnel B2B.")}`;

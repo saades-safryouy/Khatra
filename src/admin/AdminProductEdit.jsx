@@ -22,34 +22,50 @@ const PRESETS = [
 export function AdminProductEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { products, addProduct, updateProduct } = useData();
+  const { products, categories: dataCategories, addProduct, updateProduct } = useData();
 
   const isNew = !id || id === 'new';
-  const existing = products.find(p => p.id === id);
+  const existing = products.find((p) => String(p.id) === String(id) || p.slug === id);
+
+  const categories = dataCategories && dataCategories.length > 0 ? dataCategories : ['Café', 'Sirops', 'Bubbles'];
 
   const [form, setForm] = useState(() => {
     if (existing) {
       return {
-        name: existing.name || '', slug: existing.slug || '', category: existing.category || 'Café',
-        img: existing.img || Images.khatra.packaging, short: existing.short || '', desc: existing.desc || '',
-        formats: existing.formats?.join(', ') || '', features: existing.features?.join('\n') || ''
+        name: existing.name || '',
+        slug: existing.slug || '',
+        category: existing.category || categories[0] || 'Café',
+        img: existing.img || Images.khatra.packaging,
+        short: existing.short || '',
+        desc: existing.desc || '',
+        formats: existing.formats?.join(', ') || '',
+        features: existing.features?.join('\n') || '',
       };
     }
     return {
-      name: '', slug: '', category: 'Café', img: Images.khatra.packaging,
-      short: '', desc: '', formats: '1kg, Carton Pro', features: 'Torréfaction artisanale\nConditionnement hermétique'
+      name: '',
+      slug: '',
+      category: categories[0] || 'Café',
+      img: Images.khatra.packaging,
+      short: '',
+      desc: '',
+      formats: '1kg, Carton Pro',
+      features: 'Torréfaction artisanale\nConditionnement hermétique',
     };
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const payload = {
       ...form,
-      formats: form.formats.split(',').map(s => s.trim()).filter(Boolean),
-      features: form.features.split('\n').map(s => s.trim()).filter(Boolean)
+      formats: form.formats.split(',').map((s) => s.trim()).filter(Boolean),
+      features: form.features.split('\n').map((s) => s.trim()).filter(Boolean),
     };
-    if (isNew) addProduct(payload);
-    else updateProduct(id, payload);
+    if (isNew) {
+      await addProduct(payload);
+    } else {
+      await updateProduct(existing?.id || id, payload);
+    }
     navigate('/admin/products');
   };
 
@@ -79,10 +95,10 @@ export function AdminProductEdit() {
           <div className="form-row">
             <div className="form-group">
               <label>Catégorie *</label>
-              <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}>
-                <option value="Café">Café</option>
-                <option value="Sirops">Sirops</option>
-                <option value="Bubbles">Bubbles</option>
+              <select value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
+                {categories.map((c) => (
+                  <option key={c} value={c}>{c}</option>
+                ))}
               </select>
             </div>
             <div className="form-group">

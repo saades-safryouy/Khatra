@@ -1,16 +1,27 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useData } from '../context/DataContext';
-import { ArrowRight } from '../components/Icons';
-import SEO from '../components/SEO';
-import HomeHero from './home/HomeHero';
-import HomeIntro from './home/HomeIntro';
-import HomeEcosystem from './home/HomeEcosystem';
-import HomeBrand from './home/HomeBrand';
+import React from "react";
+import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import { useData } from "../context/DataContext";
+import { useScrollReveal } from "../hooks/useScrollReveal";
+import { ArrowRight } from "../components/Icons";
+import SEO from "../components/SEO";
+import HomeHero from "./home/HomeHero";
+import HomeCategories from "./home/HomeCategories";
+import HomeStory from "./home/HomeStory";
+import HomeFranchise from "./home/HomeFranchise";
+import HomeLocations from "./home/HomeLocations";
+import { useLang } from "../context/LanguageContext";
+
+const E = [0.22, 1, 0.36, 1];
 
 export function HomePage() {
   const { products } = useData();
-  const featured = products.slice(0, 4);
+  const { t } = useLang();
+  const { ref: productsRef, isInView: productsInView } = useScrollReveal();
+
+  const cafeProducts = (products || []).filter((p) => p.category === "Café");
+  const otherProducts = (products || []).filter((p) => p.category !== "Café");
+  const featured = [...cafeProducts.slice(0, 2), ...otherProducts.slice(0, 2)].slice(0, 4);
 
   return (
     <div className="home-page">
@@ -20,62 +31,83 @@ export function HomePage() {
       />
 
       <HomeHero />
-      <HomeIntro />
-      <HomeEcosystem />
-      <HomeBrand />
+      <HomeCategories />
+      <HomeStory />
+      <HomeFranchise />
 
-      {/* Products Showcase */}
-      <section style={{ background: 'var(--linen-d)', padding: '100px 0' }}>
+      <section className="home-featured" ref={productsRef}>
         <div className="container">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '48px', flexWrap: 'wrap', gap: '20px' }}>
+          <motion.div
+            className="home-featured__head"
+            initial={{ opacity: 0, y: 24 }}
+            animate={productsInView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.75, ease: E }}
+          >
             <div>
-              <span className="eyebrow">Sélection B2B</span>
-              <h2>Les indispensables de votre établissement.</h2>
+              <span className="eyebrow">{t('Sélection')}</span>
+              <h2>{t('Les incontournables Khatra')}</h2>
             </div>
             <Link to="/produits" className="btn btn-primary btn-sm">
-              Voir tout le catalogue <ArrowRight s={14} />
+              {t('Voir tout le catalogue')} <ArrowRight s={14} />
             </Link>
-          </div>
+          </motion.div>
 
-          <div className="products-grid" style={{ padding: 0 }}>
-            {featured.map(prod => (
-              <div key={prod.id} className="product-card">
-                <div className="product-card-img">
-                  <img src={prod.img} alt={prod.name} loading="lazy" />
-                  <span className="product-card-cat">{prod.category}</span>
-                </div>
-                <div className="product-card-body">
-                  <h3>{prod.name}</h3>
-                  <p>{prod.short}</p>
-                  <div className="product-card-footer">
-                    <span className="product-card-tag">{prod.formats?.[0] || 'Pro'}</span>
-                    <Link to={`/produits/${prod.slug}`} className="btn-text" style={{ fontSize: '0.8rem', fontWeight: 600 }}>
-                      Détails ↗
-                    </Link>
+          <div className="home-featured__grid">
+            {featured.map((prod, idx) => (
+              <motion.article
+                key={prod.id}
+                className={`featured-product${idx === 0 ? " featured-product--lead" : ""}`}
+                initial={{ opacity: 0, y: 40 }}
+                animate={productsInView ? { opacity: 1, y: 0 } : {}}
+                transition={{ duration: 0.8, ease: E, delay: 0.08 + idx * 0.1 }}
+              >
+                <Link to={`/produits/${prod.slug}`} className="featured-product__link">
+                  <div className="featured-product__img">
+                    <img src={prod.img} alt={prod.name} loading="lazy" />
+                    <span className="featured-product__cat">{t(prod.category)}</span>
                   </div>
-                </div>
-              </div>
+                  <div className="featured-product__body">
+                    <h3>{t(prod.name)}</h3>
+                    <p>{t(prod.short)}</p>
+                    <div className="featured-product__meta">
+                      <span>{prod.formats?.[0] || "Pro"}</span>
+                      <span className="btn-text">{t('Détails')}</span>
+                    </div>
+                  </div>
+                </Link>
+              </motion.article>
             ))}
           </div>
         </div>
       </section>
 
-      {/* B2B Callout Band */}
-      <section style={{ background: 'var(--bordeaux)', color: '#fff', padding: '90px 0' }}>
-        <div className="container" style={{ textAlign: 'center', maxWidth: '800px' }}>
-          <span className="eyebrow" style={{ color: 'var(--caramel-l)' }}>Partenariat & Distribution</span>
-          <h2 style={{ color: '#fff', marginBottom: '20px' }}>Prêt à intégrer l’écosystème Khatra ?</h2>
-          <p style={{ color: 'rgba(255,255,255,0.85)', fontSize: '1.1rem', marginBottom: '36px' }}>
-            Que vous souhaitiez ouvrir une franchise, commander des produits en gros ou équiper votre établissement, nos conseillers sont à votre écoute.
-          </p>
-          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap' }}>
-            <Link to="/contact" className="btn btn-light">
-              Demander un devis / RDV <ArrowRight s={16} />
-            </Link>
-            <Link to="/franchise" className="btn btn-outline-light">
-              Dossier Franchise
-            </Link>
-          </div>
+      <HomeLocations />
+
+      <section className="home-cta-band">
+        <div className="container">
+          <motion.div
+            className="home-cta-band__inner"
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.85, ease: E }}
+            viewport={{ once: true, margin: "-80px" }}
+          >
+            <span className="eyebrow" style={{ color: "var(--caramel-l)" }}>
+              {t('Partenariat & Distribution')}
+            </span>
+            <h2>{t("Prêt à intégrer l'écosystème Khatra ?")}</h2>
+            <p>
+              {t('Franchise, distribution ou équipement de votre établissement : nos conseillers vous accompagnent.')}
+            </p>
+            <div className="home-cta-band__actions">
+              <Link to="/contact" className="btn btn-light">
+                {t('Devenir partenaire')} <ArrowRight s={16} />
+              </Link>
+              <Link to="/franchise" className="btn btn-outline-light">
+                {t('Dossier Franchise')}
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </section>
     </div>

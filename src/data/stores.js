@@ -9,7 +9,9 @@ export const DEFAULT_STORES = [
     hours: 'Lun - Dim: 07h00 - 23h00',
     type: 'Coffee Shop & Showroom',
     mapsUrl: 'https://maps.google.com/?q=Hay+Sadri+Casablanca',
-    img: Images.khatra.brand3
+    img: Images.khatra.brand3,
+    latitude: 33.5615,
+    longitude: -7.5623,
   },
   {
     id: 's2',
@@ -19,7 +21,9 @@ export const DEFAULT_STORES = [
     hours: 'Lun - Dim: 07h30 - 23h30',
     type: 'Coffee Shop',
     mapsUrl: 'https://maps.google.com/?q=Maarif+Casablanca',
-    img: Images.khatra.khatra360
+    img: Images.khatra.khatra360,
+    latitude: 33.5862,
+    longitude: -7.6324,
   },
   {
     id: 's3',
@@ -29,7 +33,9 @@ export const DEFAULT_STORES = [
     hours: 'Lun - Sam: 08h00 - 22h30',
     type: 'Coffee Shop & Retail',
     mapsUrl: 'https://maps.google.com/?q=Agdal+Rabat',
-    img: Images.khatra.hero
+    img: Images.khatra.hero,
+    latitude: 33.9981,
+    longitude: -6.8524,
   },
   {
     id: 's4',
@@ -39,7 +45,9 @@ export const DEFAULT_STORES = [
     hours: 'Lun - Dim: 08h30 - 23h00',
     type: 'Khatra Market Retail',
     mapsUrl: 'https://maps.google.com/?q=Gueliz+Marrakech',
-    img: Images.khatra.packaging
+    img: Images.khatra.packaging,
+    latitude: 31.6346,
+    longitude: -8.0125,
   },
   {
     id: 's5',
@@ -49,6 +57,8 @@ export const DEFAULT_STORES = [
     hours: 'Lun - Dim: 08h00 - 00h00',
     type: 'Coffee Shop',
     mapsUrl: 'https://maps.google.com/?q=Malabata+Tanger',
-    img: Images.nidsys.syrupTrio
-  }
+    img: Images.nidsys.syrupTrio,
+    latitude: 35.7767,
+    longitude: -5.7834,
+  },
 ];

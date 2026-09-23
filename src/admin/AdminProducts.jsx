@@ -5,12 +5,12 @@ import { Plus, Edit, Trash } from '../components/Icons';
 import SEO from '../components/SEO';
 
 export function AdminProducts() {
-  const { products, deleteProduct } = useData();
+  const { products, categories: dataCategories, deleteProduct } = useData();
   const [search, setSearch] = useState('');
   const [filterCat, setFilterCat] = useState('Tout');
   const [deleteConfirmId, setDeleteConfirmId] = useState(null);
 
-  const categories = ['Tout', 'Café', 'Sirops', 'Bubbles'];
+  const categories = ['Tout', ...Array.from(new Set([...(dataCategories || []), ...products.map((p) => p.category)])).filter(Boolean)];
 
   const filtered = products.filter(p => {
     const matchCat = filterCat === 'Tout' || p.category === filterCat;
