@@ -86,26 +86,12 @@ export function HomeLocations() {
                 initial={{ opacity: 0, y: 36 }}
                 animate={isInView ? { opacity: 1, y: 0 } : {}}
                 transition={{ duration: 0.75, ease: E, delay: 0.08 + idx * 0.12 }}
-                style={isNearest ? { border: '2px solid var(--caramel)' } : undefined}
               >
                 <div className="location-preview-card__img">
                   <img src={store.img} alt={store.name} loading="lazy" />
                   {isNearest && (
-                    <span style={{
-                      position: 'absolute',
-                      top: '12px',
-                      left: '12px',
-                      background: 'var(--bordeaux)',
-                      color: 'var(--white)',
-                      fontSize: '0.65rem',
-                      fontWeight: 700,
-                      padding: '4px 10px',
-                      borderRadius: '4px',
-                      textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
-                      zIndex: 2,
-                    }}>
-                      ★ {t('Le plus proche')}
+                    <span className="location-nearest-label">
+                      {t('Le plus proche')}
                     </span>
                   )}
                 </div>
