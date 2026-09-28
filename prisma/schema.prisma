@@ -3,22 +3,25 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 enum UserRole {
   ADMIN
 }
+
 enum ProductStatus {
   ACTIVE
   INACTIVE
 }
+
 enum InquiryType {
   GENERAL
   PARTNERSHIP
   PRODUCT
 }
+
 enum InquiryStatus {
   NEW
   CONTACTED
@@ -26,7 +29,7 @@ enum InquiryStatus {
 }
 
 model User {
-  id        Int      @id @default(autoincrement()) @db.UnsignedInt
+  id        Int      @id @default(autoincrement())
   firstName String   @map("first_name") @db.VarChar(100)
   lastName  String   @map("last_name") @db.VarChar(100)
   email     String   @unique @db.VarChar(255)
@@ -35,11 +38,12 @@ model User {
   active    Boolean  @default(true)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+
   @@map("users")
 }
 
 model Category {
-  id           Int       @id @default(autoincrement()) @db.UnsignedInt
+  id           Int       @id @default(autoincrement())
   name         String    @db.VarChar(150)
   slug         String    @unique @db.VarChar(180)
   description  String?   @db.Text
@@ -49,40 +53,45 @@ model Category {
   createdAt    DateTime  @default(now()) @map("created_at")
   updatedAt    DateTime  @updatedAt @map("updated_at")
   products     Product[]
+
   @@map("categories")
 }
 
 model Product {
-  id               Int            @id @default(autoincrement()) @db.UnsignedInt
-  categoryId       Int            @map("category_id") @db.UnsignedInt
-  name             String         @db.VarChar(200)
-  slug             String         @unique @db.VarChar(220)
-  shortDescription String?        @map("short_description") @db.VarChar(500)
-  description      String?        @db.Text
-  reference        String?        @db.VarChar(100)
-  price            Decimal?       @db.Decimal(10, 2)
-  status           ProductStatus  @default(ACTIVE)
-  featured         Boolean        @default(false)
-  createdAt        DateTime       @default(now()) @map("created_at")
-  updatedAt        DateTime       @updatedAt @map("updated_at")
-  category         Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
-  images           ProductImage[]
+  id               Int           @id @default(autoincrement())
+  categoryId       Int           @map("category_id")
+  name             String        @db.VarChar(200)
+  slug             String        @unique @db.VarChar(220)
+  shortDescription String?       @map("short_description") @db.VarChar(500)
+  description      String?       @db.Text
+  reference        String?       @db.VarChar(100)
+  price            Decimal?      @db.Decimal(10, 2)
+  status           ProductStatus @default(ACTIVE)
+  featured         Boolean       @default(false)
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  category Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  images   ProductImage[]
+
   @@map("products")
 }
 
 model ProductImage {
-  id           Int      @id @default(autoincrement()) @db.UnsignedInt
-  productId    Int      @map("product_id") @db.UnsignedInt
+  id           Int      @id @default(autoincrement())
+  productId    Int      @map("product_id")
   imageUrl     String   @map("image_url") @db.VarChar(500)
   altText      String?  @map("alt_text") @db.VarChar(255)
   displayOrder Int      @default(0) @map("display_order")
   createdAt    DateTime @default(now()) @map("created_at")
-  product      Product  @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  product Product @relation(fields: [productId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
   @@map("product_images")
 }
 
 model Location {
-  id          Int      @id @default(autoincrement()) @db.UnsignedInt
+  id          Int      @id @default(autoincrement())
   name        String   @db.VarChar(150)
   slug        String   @unique @db.VarChar(180)
   city        String   @db.VarChar(120)
@@ -91,17 +100,19 @@ model Location {
   active      Boolean  @default(true)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
-  stores      Store[]
+
+  stores Store[]
+
   @@map("locations")
 }
 
 model Store {
-  id            Int      @id @default(autoincrement()) @db.UnsignedInt
-  locationId    Int      @map("location_id") @db.UnsignedInt
+  id            Int      @id @default(autoincrement())
+  locationId    Int      @map("location_id")
   name          String   @db.VarChar(200)
   address       String   @db.VarChar(500)
-  latitude      Decimal(10, 8)? @map("latitude")
-  longitude     Decimal(11, 8)? @map("longitude")
+  latitude      Decimal? @map("latitude") @db.Decimal(10, 8)
+  longitude     Decimal? @map("longitude") @db.Decimal(11, 8)
   phone         String?  @db.VarChar(50)
   googleMapsUrl String?  @map("google_maps_url") @db.VarChar(1000)
   image         String?  @db.VarChar(500)
@@ -109,12 +120,14 @@ model Store {
   active        Boolean  @default(true)
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
-  location      Location @relation(fields: [locationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  location Location @relation(fields: [locationId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
   @@map("stores")
 }
 
 model FranchiseConcept {
-  id               Int      @id @default(autoincrement()) @db.UnsignedInt
+  id               Int      @id @default(autoincrement())
   name             String   @db.VarChar(200)
   slug             String   @unique @db.VarChar(220)
   shortDescription String?  @map("short_description") @db.VarChar(500)
@@ -125,11 +138,12 @@ model FranchiseConcept {
   displayOrder     Int      @default(0) @map("display_order")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
+
   @@map("franchise_concepts")
 }
 
 model Inquiry {
-  id        Int           @id @default(autoincrement()) @db.UnsignedInt
+  id        Int           @id @default(autoincrement())
   type      InquiryType   @default(GENERAL)
   name      String        @db.VarChar(200)
   company   String?       @db.VarChar(200)
@@ -139,5 +153,6 @@ model Inquiry {
   status    InquiryStatus @default(NEW)
   createdAt DateTime      @default(now()) @map("created_at")
   updatedAt DateTime      @updatedAt @map("updated_at")
+
   @@map("inquiries")
 }
