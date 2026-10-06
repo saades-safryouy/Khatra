@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useLang } from '../context/LanguageContext';
 import { formatDistance } from '../utils/geo';
+import { CARTO_TILE_URL } from '../utils/mapTiles';
 import { ArrowUpRight } from './Icons';
 
 // Custom SVG Icons using exact Khatra Palette
@@ -80,7 +81,7 @@ function MapRecenter({ userCoords, stores }) {
   return null;
 }
 
-export function StoreMap({ stores = [], userCoords = null, height = '450px' }) {
+export function StoreMap({ stores = [], userCoords = null, height = '450px', selectedStoreId = null, onSelectStore = null }) {
   const { t, lang } = useLang();
 
   const validStores = useMemo(
@@ -101,7 +102,7 @@ export function StoreMap({ stores = [], userCoords = null, height = '450px' }) {
       >
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
-          url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+          url={CARTO_TILE_URL}
         />
 
         <MapRecenter userCoords={userCoords} stores={validStores} />

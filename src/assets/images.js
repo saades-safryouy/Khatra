@@ -4,35 +4,35 @@
 
 import bgHero from './design/Background.jpeg';
 
-// Bubbles
-import imgAllBubbles from './design/Bubbles/AllBubbles.png';
-import imgBubblesFrais from './design/Bubbles/BubblesFrais.png';
-import imgBubblesMangue from './design/Bubbles/BubblesMangue.png';
-import imgBubblesPassion from './design/Bubbles/BublesPqssionFruit.png';
+// Integrated bubbles photography
+import imgAllBubbles from './design/BUBLES/BUBBELS CATEGORY.jpg';
+import imgBubblesFrais from './design/BUBLES/BUBBLES FRAIS.jpg';
+import imgBubblesMangue from './design/BUBLES/BUBBLES MANGUE.jpg';
+import imgBubblesPassion from './design/BUBLES/BUBBLES PASSION.jpg';
 
-// Khatra Coffee & Branding
-import imgKhatra3 from './design/Khatra/3.jpg';
-import imgGrain from './design/Khatra/grain.jpg';
-import imgGrain2 from './design/Khatra/khatra grain.jpg';
-import imgKhatra360 from './design/Khatra/Khatra360.jpg';
-import imgPackaging from './design/Khatra/PackaginGrainKhatra.jpg';
+// Integrated coffee photography
+import imgKhatra3 from './design/KHATRA GRAIN/KHATRA CATEGORY.jpg';
+import imgGrain from './design/hero-bg.jpg';
+import imgGrain2 from './design/KHATRA GRAIN/KHATRA EXTRA DORE.jpg';
+import imgKhatra360 from './design/KHATRA GRAIN/KHATRA EXPRESSO.jpg';
+import imgPackaging from './design/KHATRA GRAIN/KHATRA CATEGORY.jpg';
 
-// Nidsys & Syrups
-import imgSyrup3 from './design/Nidsys/3Syrup.png';
-import imgBiscuit from './design/Nidsys/Biscuit.jpg';
-import imgKiwi from './design/Nidsys/Kiwi.jpg';
-import imgRaisin from './design/Nidsys/Raisin.jpg';
+// Integrated Nidsys syrup photography
+import imgSyrup3 from './design/NINDYS SIROP/NINDYS SIROP CATEGORY.jpg';
+import imgBiscuit from './design/NINDYS SIROP/NINDYS SIROP BISCUIT.jpg';
+import imgKiwi from './design/NINDYS SIROP/NINDYS SIROP CATEGORY.jpg';
+import imgRaisin from './design/NINDYS SIROP/NINDYS SIROP FRUIT DE BOITS.jpg';
 
-// Posts & Slogans
-import imgSlogan1 from './design/Post/Slogan1.jpg';
-import imgSlogan2 from './design/Post/Slogan2.jpg';
-import imgSlogan3 from './design/Post/Slogan3.jpg';
+// Integrated branded product images used in story content
+import imgSlogan1 from './design/SUGAR/SUGAR KHATRA1.jpg';
+import imgSlogan2 from './design/SUGAR/SUGAR KHATRA2.jpg';
+import imgSlogan3 from './design/KHATRA GRAIN/KHATRA CATEGORY.jpg';
 
-// Syrup individual bottles
-import imgSyrupBiscuit from './design/syrup/BiscuitSyrup.jpg';
-import imgSyrupCaramel from './design/syrup/CaramelSyrup.jpg';
-import imgSyrupNoisette from './design/syrup/NoisetteSyrup.jpg';
-import imgSyrupToffe from './design/syrup/ToffeNutSyrup.jpg';
+// Integrated individual syrup bottle photography
+import imgSyrupBiscuit from './design/SIROP/SIROP BISCUIT.jpg';
+import imgSyrupCaramel from './design/SIROP/SIROP CARAMEL.jpg';
+import imgSyrupNoisette from './design/SIROP/SIROP NOISETTE.jpg';
+import imgSyrupToffe from './design/SIROP/SIROP TOFEE NUT.jpg';
 
 export const Images = {
   bgHero,

@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { DataProvider } from './context/DataContext';
 import { LanguageProvider } from './context/LanguageContext';
+import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import WhatsAppFloating from './components/WhatsAppFloating';
@@ -19,15 +20,6 @@ import LocationsPage from './pages/LocationsPage';
 import StoryPage from './pages/StoryPage';
 import ContactPage from './pages/ContactPage';
 
-// Admin Pages
-import AdminLayout from './admin/AdminLayout';
-import AdminLoginPage from './admin/AdminLoginPage';
-import AdminDashboard from './admin/AdminDashboard';
-import AdminProducts from './admin/AdminProducts';
-import AdminProductEdit from './admin/AdminProductEdit';
-import AdminStores from './admin/AdminStores';
-import AdminContent from './admin/AdminContent';
-import AdminSettings from './admin/AdminSettings';
 
 function PublicLayout() {
   return (
@@ -35,7 +27,7 @@ function PublicLayout() {
       <Navbar />
       <Outlet />
       <Footer />
-      <WhatsAppFloating />
+      {/* <WhatsAppFloating /> */}
     </>
   );
 }
@@ -43,6 +35,7 @@ function PublicLayout() {
 export function App() {
   return (
     <DataProvider>
+      <ThemeProvider>
       <LanguageProvider>
       <ScrollToTop />
       <Toast />
@@ -59,25 +52,11 @@ export function App() {
           <Route path="/notre-histoire" element={<StoryPage />} />
           <Route path="/contact" element={<ContactPage />} />
         </Route>
-
-        {/* Admin Auth */}
-        <Route path="/admin/login" element={<AdminLoginPage />} />
-
-        {/* Admin Dashboard */}
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboard />} />
-          <Route path="products" element={<AdminProducts />} />
-          <Route path="products/new" element={<AdminProductEdit />} />
-          <Route path="products/:id/edit" element={<AdminProductEdit />} />
-          <Route path="stores" element={<AdminStores />} />
-          <Route path="content" element={<AdminContent />} />
-          <Route path="settings" element={<AdminSettings />} />
-        </Route>
-
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       </LanguageProvider>
+      </ThemeProvider>
     </DataProvider>
   );
 }

@@ -24,7 +24,7 @@ export function ContactForm() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
-  const { submitInquiry, showToast } = useData();
+  const { submitInquiry } = useData();
 
   const handleSubmit = async (e) => {
     e.preventDefault();

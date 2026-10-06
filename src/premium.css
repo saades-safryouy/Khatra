@@ -1,0 +1,170 @@
+/* ============================================================
+   KHATRA — PREMIUM LAYER
+   Import AFTER your main stylesheet. Nothing here removes your
+   design: it refines it (depth, motion, details) and fixes RTL/a11y.
+   ============================================================ */
+
+/* ── 1. TOKENS: warmer, layered shadows + gold hairline ─────── */
+:root {
+  color-scheme: light;
+  --shadow-sm: 0 1px 2px rgba(42, 30, 23, 0.04), 0 8px 18px -8px rgba(42, 30, 23, 0.10);
+  --shadow-md: 0 2px 4px rgba(42, 30, 23, 0.04), 0 18px 34px -14px rgba(42, 30, 23, 0.16);
+  --shadow-lg: 0 4px 8px rgba(42, 30, 23, 0.04), 0 34px 62px -26px rgba(42, 30, 23, 0.30);
+  --gold-line: linear-gradient(90deg, transparent, var(--caramel), transparent);
+  /* Moroccan 8-point star (khatam) – subtle, used on bordeaux bands */
+  --pattern-star: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='none' stroke='%23D9BA87' stroke-width='1'%3E%3Crect x='18' y='18' width='36' height='36'/%3E%3Crect x='18' y='18' width='36' height='36' transform='rotate(45 36 36)'/%3E%3Ccircle cx='36' cy='36' r='5'/%3E%3C/g%3E%3C/svg%3E");
+}
+html[data-theme="dark"] { color-scheme: dark; }
+
+/* ── 2. BASE: smoother, safer, more refined ─────────────────── */
+html {
+  scroll-padding-top: calc(var(--nav-h) + 16px);   /* anchors don't hide under nav */
+  scrollbar-color: var(--caramel-d) transparent;
+  text-rendering: optimizeLegibility;
+}
+body { overflow-x: clip; }                          /* keeps position:sticky working */
+::selection { background: var(--bordeaux); color: #fff; }
+html[data-theme="dark"] ::selection { background: var(--caramel); color: #19120E; }
+
+h1, h2, h3, h4 { text-wrap: balance; font-feature-settings: "liga", "kern"; }
+p { text-wrap: pretty; }
+
+/* eyebrow gets a fine rule – editorial signature */
+.eyebrow { display: inline-flex; align-items: center; gap: 12px; }
+.eyebrow::before {
+  content: ""; width: 28px; height: 1px; background: currentColor; opacity: 0.6;
+}
+
+/* ── 3. ACCESSIBILITY: visible focus everywhere ─────────────── */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--bordeaux);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+html[data-theme="dark"] :where(a, button, input, select, textarea, [tabindex]):focus-visible,
+.site-navbar--hero-transparent :where(a, button):focus-visible,
+.navbar-mobile-drawer :where(a, button):focus-visible,
+.site-editorial-footer :where(a, button):focus-visible,
+.home-cta-band-bordeaux :where(a, button):focus-visible,
+.products-b2b :where(a, button):focus-visible {
+  outline-color: var(--caramel-l);
+}
+/* skip link (add <a class="skip-link" href="#main">…</a> as first body child) */
+.skip-link {
+  position: fixed; top: 12px; inset-inline-start: 12px; z-index: 2000;
+  padding: 10px 18px; background: var(--bordeaux); color: #fff;
+  border-radius: var(--radius-full); font-size: 0.8rem; font-weight: 700;
+  transform: translateY(-160%); transition: transform 0.25s var(--ease-out);
+}
+.skip-link:focus { transform: none; }
+.site-navbar__hamburger { width: 44px; height: 44px; }   /* 44px tap target */
+
+/* ── 4. BUTTONS: depth, press feedback, consistent height ───── */
+.btn { min-height: 48px; transition: transform 0.35s var(--ease-out), box-shadow 0.35s var(--ease-out),
+        background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease; }
+.btn-primary {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0) 60%);
+}
+.btn:active { transform: translateY(0) scale(0.98); transition-duration: 0.12s; }
+.btn-sm { min-height: 40px; }
+
+/* ── 5. NAVBAR: underline-slide links instead of heavy pills ── */
+.site-navbar__link::after {
+  content: ""; position: absolute; inset-inline: 16px; bottom: 4px; height: 1px;
+  background: currentColor; transform: scaleX(0); transform-origin: left;
+  transition: transform 0.35s var(--ease-out);
+}
+.site-navbar__link:hover::after,
+.site-navbar__link--active::after { transform: scaleX(1); }
+.site-navbar--hero-transparent .site-navbar__link:hover,
+.site-navbar--hero-transparent .site-navbar__link--active,
+.site-navbar--scrolled .site-navbar__link:hover,
+.site-navbar--scrolled .site-navbar__link--active,
+html[data-theme="dark"] .site-navbar--scrolled .site-navbar__link:hover,
+html[data-theme="dark"] .site-navbar--scrolled .site-navbar__link--active {
+  background: transparent; backdrop-filter: none;
+}
+.site-navbar--scrolled { backdrop-filter: blur(20px) saturate(1.4); -webkit-backdrop-filter: blur(20px) saturate(1.4); }
+
+/* ── 6. CARDS: calmer motion, richer depth ──────────────────── */
+.cat-editorial-card, .featured-prod-item, .location-editorial-card,
+.franchise-editorial-panel, .location-card {
+  transition: transform 0.5s var(--ease-out), box-shadow 0.5s var(--ease-out), border-color 0.4s ease;
+}
+.cat-editorial-card:hover, .featured-prod-item:hover, .location-editorial-card:hover { transform: translateY(-8px); }
+.featured-prod-item__img-box img { filter: drop-shadow(0 16px 14px rgba(42, 30, 23, 0.18)); }
+/* no sticky-hover lift on touch screens */
+@media (hover: none) {
+  .cat-editorial-card:hover, .featured-prod-item:hover, .location-editorial-card:hover,
+  .franchise-editorial-panel:hover, .location-card:hover { transform: none; }
+}
+
+/* ── 7. SECTIONS: gold hairlines + Moroccan pattern details ─── */
+.site-editorial-footer { position: relative; }
+.site-editorial-footer::before {
+  content: ""; position: absolute; top: 0; inset-inline: 0; height: 1px; background: var(--gold-line);
+}
+.home-cta-band-bordeaux::after,
+.products-b2b::after,
+.franchise-hero::after {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: var(--pattern-star) center / 72px 72px;
+  opacity: 0.14;
+  -webkit-mask-image: radial-gradient(ellipse at 100% 0%, #000 0%, transparent 70%);
+          mask-image: radial-gradient(ellipse at 100% 0%, #000 0%, transparent 70%);
+}
+.products-b2b, .franchise-hero { position: relative; isolation: isolate; }
+.products-b2b > *, .franchise-hero > * { position: relative; z-index: 1; }
+html[dir="rtl"] .home-cta-band-bordeaux::after,
+html[dir="rtl"] .products-b2b::after,
+html[dir="rtl"] .franchise-hero::after {
+  -webkit-mask-image: radial-gradient(ellipse at 0% 0%, #000 0%, transparent 70%);
+          mask-image: radial-gradient(ellipse at 0% 0%, #000 0%, transparent 70%);
+}
+.story-pillar-item { transition: padding-inline-start 0.4s var(--ease-out); }
+.story-pillar-item:hover { padding-inline-start: 8px; }
+
+/* ── 8. FORMS: calmer, more premium ─────────────────────────── */
+:where(input, select, textarea) { accent-color: var(--bordeaux); }
+::placeholder { color: var(--text-muted); opacity: 0.7; }
+.form-group input, .form-group select, .form-group textarea { border-radius: var(--radius-sm); }
+.form-group input:hover, .form-group select:hover, .form-group textarea:hover { border-color: var(--text-muted); }
+
+/* ── 9. ARABIC / RTL: correctness first ─────────────────────── */
+/* Letter-spacing breaks Arabic letter joining → always 0 */
+html[dir="rtl"] *, html[dir="rtl"] *::before, html[dir="rtl"] *::after,
+html[lang="ar"] *, html[lang="ar"] *::before, html[lang="ar"] *::after { letter-spacing: 0 !important; }
+html[dir="rtl"] body { line-height: 1.95; }
+html[dir="rtl"] h1, html[dir="rtl"] h2, html[dir="rtl"] h3, html[dir="rtl"] h4 { line-height: 1.4; }
+html[dir="rtl"] p { line-height: 2; }
+
+/* arrows / hovers that were hard-coded left→right */
+html[dir="rtl"] .btn-text:hover,
+html[dir="rtl"] .cat-editorial-card:hover .cat-editorial-card__btn-text,
+html[dir="rtl"] .featured-prod-item:hover .featured-prod-item__btn-text { transform: translateX(-4px); }
+html[dir="rtl"] .navbar-mobile-drawer__link:hover { padding-left: 0; padding-right: 8px; }
+html[dir="rtl"] .navbar-mobile-drawer__link.mobile-sub-link { padding-left: 0; padding-right: 16px; }
+html[dir="rtl"] .site-navbar__link::after,
+html[dir="rtl"] .products-filter::after { transform-origin: right; }
+/* absolutely-placed badges */
+html[dir="rtl"] .cat-editorial-card__num { right: auto; left: 16px; }
+html[dir="rtl"] .featured-prod-item__cat,
+html[dir="rtl"] .location-editorial-card__city-tag { left: auto; right: 14px; }
+html[dir="rtl"] .location-editorial-card__nearest-tag { right: auto; left: 12px; }
+html[dir="rtl"] .story-editorial__stamp { left: auto; right: 24px; }
+html[dir="rtl"] .story-editorial__secondary-card { right: auto; left: -30px; }
+html[dir="rtl"] .hero-showcase__content,
+html[dir="rtl"] .products-state--notice { text-align: right; }
+html[dir="rtl"] .products-state--notice { border-left: 0; border-right: 2px solid var(--bordeaux); }
+@media (max-width: 1024px) {
+  html[dir="rtl"] .story-editorial__secondary-card { left: 0; right: auto; }
+}
+
+/* ── 10. MOTION: respect user preference globally ───────────── */
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important; animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

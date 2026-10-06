@@ -49,6 +49,10 @@ export function DataProvider({ children }) {
         franchisesApi.getFranchises(),
       ]);
 
+      if (prodsRes.status === 'rejected') {
+        setError(prodsRes.reason?.message || 'Impossible de charger le catalogue produits.');
+      }
+
       if (prodsRes.status === 'fulfilled' && Array.isArray(prodsRes.value) && prodsRes.value.length > 0) {
         setProducts(prodsRes.value.map(adaptProduct));
       }
@@ -69,9 +73,9 @@ export function DataProvider({ children }) {
       if (franRes.status === 'fulfilled' && Array.isArray(franRes.value)) {
         setFranchises(franRes.value.map(adaptFranchise));
       }
-    } catch (err) {
-      console.warn('Backend fetch error, using local data:', err);
-      setError(err.message || 'Erreur API');
+    } catch (_err) {
+      console.warn('Backend fetch error, using local data:', _err);
+      setError(_err.message || 'Erreur API');
     } finally {
       setLoading(false);
     }

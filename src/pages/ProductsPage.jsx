@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
+import { motion } from 'framer-motion';
 import { ArrowRight, WhatsApp } from '../components/Icons';
+import ProductCard from '../components/ProductCard';
 import SEO from '../components/SEO';
+import productsIntroImage from '../assets/design/PRODUCTS_bg.jpeg';
 
 export function ProductsPage() {
-  const { products, categories: backendCategories, settings, loading } = useData();
+  const { products, categories: backendCategories, settings, loading, error, refreshData } = useData();
   const [activeCategory, setActiveCategory] = useState('Tout');
 
   const categories = [
@@ -27,68 +30,81 @@ export function ProductsPage() {
         description="Découvrez la gamme professionnelle Khatra : grains de café sélectionnés, sirops pour boissons et bubbles de fruits."
       />
 
-      {/* Page Header */}
-      <div className="page-header no-image">
-        <div className="page-header-inner">
+      <header className="products-intro">
+        <div className="products-intro-bg" aria-hidden="true">
+          <img src={productsIntroImage} alt="" fetchPriority="high" />
+        </div>
+        <div className="products-intro-inner">
           <span className="eyebrow">Catalogue & Épicerie Pro</span>
-          <h1>Nos Produits B2B</h1>
+          <h1>Nos Produits</h1>
           <p>
             Des ingrédients de haute volée pensés pour les baristas, mixologues, salons de thé et concepts de restauration moderne.
           </p>
+          <span className="products-intro-index">Khatra · Sélection professionnelle</span>
         </div>
-      </div>
+      </header>
 
-      {/* Category Filter Tabs */}
-      <div style={{ background: 'var(--linen)', borderBottom: '1px solid rgba(42,30,23,0.08)', padding: '24px 0', position: 'sticky', top: 'var(--nav-h)', zIndex: 10 }}>
-        <div className="container" style={{ display: 'flex', gap: '12px', overflowX: 'auto', paddingBottom: '4px' }}>
-          {categories.map(cat => (
+      <nav className="products-filters container" aria-label="Filtrer par catégorie">
+        <div className="products-filters-list">
+          {categories.map((cat) => (
             <button
               key={cat}
+              type="button"
               onClick={() => setActiveCategory(cat)}
-              className={`btn btn-sm ${activeCategory === cat ? 'btn-primary' : 'btn-outline-dark'}`}
-              style={{ padding: '8px 20px', borderRadius: '30px' }}
+              className={`products-filter${activeCategory === cat ? ' is-active' : ''}`}
+              aria-pressed={activeCategory === cat}
             >
               {cat}
             </button>
           ))}
         </div>
-      </div>
+        <span className="products-count">
+          {filtered.length} {filtered.length === 1 ? 'référence' : 'références'}
+        </span>
+      </nav>
 
-      {/* Products Grid */}
-      <div className="container section">
-        <div className="products-grid" style={{ padding: 0 }}>
-          {filtered.map(prod => (
-            <div key={prod.id} className="product-card">
-              <div className="product-card-img">
-                <img src={prod.img} alt={prod.name} loading="lazy" />
-                <span className="product-card-cat">{prod.category}</span>
-              </div>
-              <div className="product-card-body">
-                <h3>{prod.name}</h3>
-                <p>{prod.short}</p>
-                <div className="product-card-footer">
-                  <span className="product-card-tag">{prod.formats?.join(' · ') || 'Format Pro'}</span>
-                  <Link to={`/produits/${prod.slug}`} className="btn-text" style={{ fontSize: '0.82rem', fontWeight: 600 }}>
-                    Voir la fiche <ArrowRight s={14} />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <section className="container products-catalogue" aria-label="Catalogue produits">
+        {error && (
+          <div className="products-state products-state--notice" role="status">
+            <p>Le catalogue est affiché avec les données disponibles. La synchronisation est momentanément indisponible.</p>
+            <button type="button" className="btn-text" onClick={refreshData}>Réessayer</button>
+          </div>
+        )}
+        {loading && products.length === 0 ? (
+          <div className="products-state" role="status" aria-live="polite">Chargement du catalogue…</div>
+        ) : filtered.length > 0 ? (
+          <div className="products-grid">
+            {filtered.map((product, index) => (
+              <ProductCard key={product.id} product={product} index={index} />
+            ))}
+          </div>
+        ) : (
+          <div className="products-state">
+            <h2>Aucun produit dans cette catégorie</h2>
+            <p>Choisissez une autre catégorie pour parcourir notre sélection professionnelle.</p>
+            <button type="button" className="btn-text" onClick={() => setActiveCategory('Tout')}>
+              Voir tout le catalogue <ArrowRight s={15} />
+            </button>
+          </div>
+        )}
+      </section>
 
-      {/* Bottom B2B Banner */}
-      <section style={{ background: 'var(--dark)', color: '#fff', padding: '80px 0' }}>
-        <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '30px' }}>
+      <motion.section
+        className="products-b2b"
+        initial={{ opacity: 0, y: 18 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.2 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="container products-b2b-inner">
           <div>
-            <span className="eyebrow" style={{ color: 'var(--caramel-l)' }}>Commande volumique & Échantillons</span>
-            <h2 style={{ color: '#fff', fontSize: '2rem', marginBottom: '8px' }}>Besoin d’un devis sur-mesure ?</h2>
-            <p style={{ color: 'rgba(255,255,255,0.7)', margin: 0 }}>
+            <span className="eyebrow">Commande volumique & Échantillons</span>
+            <h2>Besoin d’un devis sur-mesure ?</h2>
+            <p>
               Livraison pro rapide sur tout le Maroc et tarification dégressive par carton / palette.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '14px', flexWrap: 'wrap' }}>
+          <div className="products-b2b-actions">
             <Link to="/contact" className="btn btn-primary">
               Demander un devis B2B <ArrowRight s={16} />
             </Link>
@@ -97,7 +113,7 @@ export function ProductsPage() {
             </a>
           </div>
         </div>
-      </section>
+      </motion.section>
     </div>
   );
 }

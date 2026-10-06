@@ -1,140 +1,84 @@
-import React, { useMemo } from "react";
-import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { useData } from "../../context/DataContext";
-import { useScrollReveal } from "../../hooks/useScrollReveal";
-import { useGeolocation } from "../../hooks/useGeolocation";
-import { sortStoresByDistance, formatDistance } from "../../utils/geo";
-import { ArrowRight, MapPin } from "../../components/Icons";
-import { useLang } from "../../context/LanguageContext";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useData } from '../../context/DataContext';
+import { useScrollReveal } from '../../hooks/useScrollReveal';
+import { ArrowRight, MapPin } from '../../components/Icons';
+import { useLang } from '../../context/LanguageContext';
 
-const E = [0.22, 1, 0.36, 1];
+const EASE = [0.22, 1, 0.36, 1];
 
 export function HomeLocations() {
   const { stores } = useData();
-  const { t, lang } = useLang();
+  const { t } = useLang();
   const { ref, isInView } = useScrollReveal();
-  const { coords, loading: geoLoading, error: geoError, locate } = useGeolocation();
-
-  // If user location is available, sort and pick the 3 nearest stores. Otherwise default first 3.
-  const displayedStores = useMemo(() => {
-    const raw = stores || [];
-    if (coords) {
-      return sortStoresByDistance(raw, coords.latitude, coords.longitude).slice(0, 3);
-    }
-    return raw.slice(0, 3);
-  }, [stores, coords]);
+  const displayedStores = (stores || []).filter((store) => store.active !== false).slice(0, 3);
 
   return (
-    <section className="home-locations" ref={ref}>
+    <section className="locations-editorial-section" ref={ref}>
       <div className="container">
         <motion.div
-          className="home-locations__head"
+          className="locations-editorial__header"
           initial={{ opacity: 0, y: 24 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
-          transition={{ duration: 0.75, ease: E }}
+          transition={{ duration: 0.75, ease: EASE }}
         >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '16px' }}>
+          <div className="locations-editorial__header-main">
             <div>
-              <span className="eyebrow">{t('Réseau')}</span>
-              <h2>{t('Retrouvez-nous près de chez vous')}</h2>
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <button
-                type="button"
-                onClick={locate}
-                disabled={geoLoading}
-                className={`btn btn-sm ${coords ? 'btn-primary' : 'btn-outline'}`}
-                style={{ borderRadius: '24px' }}
-              >
-                {geoLoading ? (
-                  <span>{t('Localisation en cours...')}</span>
-                ) : coords ? (
-                  <span>✓ {t('À proximité')}</span>
-                ) : (
-                  <span>📍 {t('Trouver près de moi')}</span>
-                )}
-              </button>
+              <span className="eyebrow">{t('Réseau & Présence')}</span>
+              <h2>{t('Retrouvez nos points de vente au Maroc')}</h2>
+              <p className="locations-editorial__intro">
+                {t('Retrouvez l’expérience Khatra dans nos différents points de vente à travers le Maroc.')}
+              </p>
             </div>
           </div>
-
-          {geoError && (
-            <div style={{
-              marginTop: '12px',
-              fontSize: '0.82rem',
-              color: 'var(--bordeaux)',
-              background: 'rgba(92,29,36,0.08)',
-              padding: '8px 14px',
-              borderRadius: 'var(--radius)'
-            }}>
-              {geoError === 'PERMISSION_DENIED'
-                ? t('Autorisation de géolocalisation refusée.')
-                : t('Impossible d’obtenir votre position.')}
-            </div>
-          )}
         </motion.div>
 
-        <div className="location-preview-grid">
-          {displayedStores.map((store, idx) => {
-            const isNearest = coords && idx === 0;
+        <div className="locations-editorial__grid">
+          {displayedStores.map((store, idx) => (
+            <motion.article
+              key={store.id}
+              className="location-editorial-card"
+              initial={{ opacity: 0, y: 36 }}
+              animate={isInView ? { opacity: 1, y: 0 } : {}}
+              transition={{ duration: 0.75, ease: EASE, delay: 0.08 + idx * 0.12 }}
+            >
+              <div className="location-editorial-card__img-box">
+                <img src={store.img} alt={store.name} loading="lazy" />
+                <span className="location-editorial-card__city-tag">{t(store.city)}</span>
+              </div>
 
-            return (
-              <motion.article
-                key={store.id}
-                className={`location-preview-card${isNearest ? ' location-preview-card--nearest' : ''}`}
-                initial={{ opacity: 0, y: 36 }}
-                animate={isInView ? { opacity: 1, y: 0 } : {}}
-                transition={{ duration: 0.75, ease: E, delay: 0.08 + idx * 0.12 }}
-              >
-                <div className="location-preview-card__img">
-                  <img src={store.img} alt={store.name} loading="lazy" />
-                  {isNearest && (
-                    <span className="location-nearest-label">
-                      {t('Le plus proche')}
-                    </span>
-                  )}
-                </div>
-                <div className="location-preview-card__body">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                    <span className="eyebrow" style={{ margin: 0 }}>{t(store.city)}</span>
-                    {store.distanceKm != null && (
-                      <span style={{
-                        fontSize: '0.78rem',
-                        fontWeight: 700,
-                        color: 'var(--bordeaux)',
-                        background: 'rgba(92,29,36,0.08)',
-                        padding: '2px 8px',
-                        borderRadius: '12px'
-                      }}>
-                        {formatDistance(store.distanceKm, lang)}
-                      </span>
-                    )}
-                  </div>
+              <div className="location-editorial-card__body">
+                <div className="location-editorial-card__top">
                   <h3>{t(store.name)}</h3>
-                  <p>
-                    <MapPin s={15} />
-                    <span>{store.address}</span>
-                  </p>
-                  {store.mapsUrl && (
-                    <a href={store.mapsUrl} target="_blank" rel="noopener noreferrer" className="btn-text">
-                      {t('Voir sur la carte')}
-                    </a>
-                  )}
                 </div>
-              </motion.article>
-            );
-          })}
+                <p className="location-editorial-card__addr">
+                  <MapPin s={14} />
+                  <span>{store.address}</span>
+                </p>
+                {store.mapsUrl && (
+                  <a
+                    href={store.mapsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="location-editorial-card__map-link"
+                  >
+                    {t('Voir l’itinéraire sur la carte')} <ArrowRight s={12} />
+                  </a>
+                )}
+              </div>
+            </motion.article>
+          ))}
         </div>
 
         <motion.div
-          className="home-locations__cta"
+          className="locations-editorial__cta"
           initial={{ opacity: 0 }}
           animate={isInView ? { opacity: 1 } : {}}
-          transition={{ duration: 0.7, ease: E, delay: 0.45 }}
+          transition={{ duration: 0.7, ease: EASE, delay: 0.4 }}
         >
-          <Link to="/points-de-vente" className="btn btn-primary">
-            {t('Voir tous les points de vente')} <ArrowRight s={16} />
+          <Link to="/points-de-vente" className="btn btn-outline-dark">
+            {t('Où nous trouver ?')} <ArrowRight s={16} />
           </Link>
         </motion.div>
       </div>
