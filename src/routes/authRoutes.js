@@ -1,1 +1,6 @@
-const express=require('express'); const c=require('../controllers/authController'); const {protect}=require('../middleware/auth'); const r=express.Router(); r.post('/login',c.login); r.post('/logout',c.logout); r.get('/me',protect,c.me); module.exports=r;
+const express=require('express');
+ const c=require('../controllers/authController'); 
+ const {protect}=require('../middleware/auth'); 
+ const r=express.Router(); 
+ r.post('/login',c.login); r.post('/logout',c.logout); r.get('/me',protect,c.me); 
+ module.exports=r;
