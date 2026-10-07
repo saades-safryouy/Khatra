@@ -14,8 +14,8 @@ function validate(data, partial = false) {
   }
   if (data.price !== undefined && data.price !== '' && data.price !== null) {
     const num = Number(data.price);
-    if (isNaN(num) || num < 0) {
-      throw new AppError('Product price must be a valid non-negative number', 400);
+    if (!Number.isFinite(num) || num < 0 || num > 99999999.99 || !/^\d{1,8}(\.\d{1,2})?$/.test(String(data.price).trim())) {
+      throw new AppError('Product price must be a non-negative amount with at most two decimal places', 400);
     }
   }
 }
@@ -162,4 +162,3 @@ exports.remove = async id => {
   existing.images.forEach(img => deleteFile(img.imageUrl));
   return existing;
 };
-

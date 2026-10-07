@@ -41,7 +41,10 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api', require('./routes/adminAnalyticsRoutes'));
+app.use('/api', require('./routes/adminAccountRoutes'));
 app.use('/api', require('./routes/productRoutes'));
+app.use('/api', require('./routes/googleReviewsRoutes'));
 app.use('/api', require('./routes/categoryRoutes'));
 app.use('/api', require('./routes/locationRoutes'));
 app.use('/api', require('./routes/storeRoutes'));
