@@ -66,6 +66,8 @@ model Product {
   description      String?       @db.Text
   reference        String?       @db.VarChar(100)
   price            Decimal?      @db.Decimal(10, 2)
+  promo            Decimal?      @db.Decimal(5, 2)
+  promoExpiresAt   DateTime?     @map("promo_expires_at")
   status           ProductStatus @default(ACTIVE)
   featured         Boolean       @default(false)
   createdAt        DateTime      @default(now()) @map("created_at")

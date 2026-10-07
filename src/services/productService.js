@@ -1,37 +1,46 @@
 const prisma = require('../config/database');
 const { AppError, pagination, toBool, clean } = require('../utils/helpers');
 const { deleteFile } = require('../middleware/upload');
+const { effectivePrice, isPromotionActive, validatePromotion } = require('../utils/pricing');
 
 function validate(data, partial = false) {
   if (!partial || data.name !== undefined) {
-    if (!String(data.name || '').trim()) throw new AppError('Product name is required', 400);
+    if (!String(data.name || '').trim()) throw new AppError('Le nom du produit est obligatoire.', 400);
   }
   if (!partial || data.categoryId !== undefined) {
-    if (!data.categoryId) throw new AppError('Product categoryId is required', 400);
+    if (!data.categoryId) throw new AppError('La catégorie du produit est obligatoire.', 400);
   }
   if (!partial || data.slug !== undefined) {
-    if (!String(data.slug || '').trim()) throw new AppError('Product slug is required', 400);
+    if (!String(data.slug || '').trim()) throw new AppError('L’identifiant URL du produit est obligatoire.', 400);
   }
   if (data.price !== undefined && data.price !== '' && data.price !== null) {
     const num = Number(data.price);
     if (!Number.isFinite(num) || num < 0 || num > 99999999.99 || !/^\d{1,8}(\.\d{1,2})?$/.test(String(data.price).trim())) {
-      throw new AppError('Product price must be a non-negative amount with at most two decimal places', 400);
+      throw new AppError('Le prix doit être positif ou nul et comporter au maximum deux décimales.', 400);
     }
   }
 }
 
 async function ensureUniqueSlug(slug, excludeId) {
   const found = await prisma.product.findUnique({ where: { slug } });
-  if (found && found.id !== excludeId) throw new AppError('Product slug already exists', 409);
+  if (found && found.id !== excludeId) throw new AppError('Cet identifiant URL est déjà utilisé.', 409);
 }
 
 async function ensureCategory(id) {
   const cat = await prisma.category.findUnique({ where: { id: Number(id) } });
-  if (!cat) throw new AppError('Category not found', 404);
+  if (!cat) throw new AppError('Catégorie introuvable.', 404);
   return cat;
 }
 
 const include = { category: true, images: { orderBy: { displayOrder: 'asc' } } };
+
+function presentProduct(product, now = new Date()) {
+  return {
+    ...product,
+    promoActive: isPromotionActive(product, now),
+    effectivePrice: effectivePrice(product, now),
+  };
+}
 
 exports.publicList = async q => {
   const { page, limit, skip } = pagination(q);
@@ -50,7 +59,7 @@ exports.publicList = async q => {
     prisma.product.findMany({ where, skip, take: limit, orderBy: { createdAt: 'desc' }, include }),
     prisma.product.count({ where })
   ]);
-  return { items, meta: { page, limit, total, pages: Math.ceil(total / limit) } };
+  return { items: items.map(item => presentProduct(item)), meta: { page, limit, total, pages: Math.ceil(total / limit) } };
 };
 
 exports.publicBySlug = async slug => {
@@ -58,8 +67,8 @@ exports.publicBySlug = async slug => {
     where: { slug, status: 'ACTIVE', category: { active: true } },
     include
   });
-  if (!item) throw new AppError('Product not found', 404);
-  return item;
+  if (!item) throw new AppError('Produit introuvable.', 404);
+  return presentProduct(item);
 };
 
 exports.adminList = async q => {
@@ -80,23 +89,24 @@ exports.adminList = async q => {
     prisma.product.findMany({ where, skip, take: limit, orderBy: { createdAt: 'desc' }, include }),
     prisma.product.count({ where })
   ]);
-  return { items, meta: { page, limit, total, pages: Math.ceil(total / limit) } };
+  return { items: items.map(item => presentProduct(item)), meta: { page, limit, total, pages: Math.ceil(total / limit) } };
 };
 
 exports.adminById = async id => {
   const item = await prisma.product.findUnique({ where: { id: Number(id) }, include });
-  if (!item) throw new AppError('Product not found', 404);
-  return item;
+  if (!item) throw new AppError('Produit introuvable.', 404);
+  return presentProduct(item);
 };
 
 exports.create = async (data, imageUrls = []) => {
   validate(data);
+  const promotion = validatePromotion(data);
   await ensureCategory(data.categoryId);
   await ensureUniqueSlug(data.slug);
   const priceVal = data.price !== undefined && data.price !== '' && data.price !== null
     ? Number(data.price)
     : null;
-  return prisma.product.create({
+  const created = await prisma.product.create({
     data: {
       categoryId: Number(data.categoryId),
       name: data.name.trim(),
@@ -105,6 +115,7 @@ exports.create = async (data, imageUrls = []) => {
       description: data.description || null,
       reference: data.reference || null,
       price: priceVal,
+      ...promotion,
       status: data.status || 'ACTIVE',
       featured: toBool(data.featured),
       images: {
@@ -113,11 +124,13 @@ exports.create = async (data, imageUrls = []) => {
     },
     include
   });
+  return presentProduct(created);
 };
 
 exports.update = async (id, data, imageUrls = []) => {
   const existing = await exports.adminById(id);
   validate(data, true);
+  const promotion = validatePromotion(data, existing, true);
   if (data.categoryId) await ensureCategory(data.categoryId);
   if (data.slug) await ensureUniqueSlug(data.slug, existing.id);
   const priceVal = data.price === undefined
@@ -146,6 +159,7 @@ exports.update = async (id, data, imageUrls = []) => {
         description: data.description,
         reference: data.reference,
         price: priceVal,
+        ...promotion,
         status: data.status,
         featured: data.featured === undefined ? undefined : toBool(data.featured)
       }),
@@ -153,7 +167,7 @@ exports.update = async (id, data, imageUrls = []) => {
     });
   });
   if (imageUrls.length) existing.images.forEach(img => deleteFile(img.imageUrl));
-  return updated;
+  return presentProduct(updated);
 };
 
 exports.remove = async id => {

@@ -1,6 +1,7 @@
 const prisma = require('../config/database');
 const { AppError, isEmail, pagination, clean } = require('../utils/helpers');
 const inquiryEmailService = require('./inquiryEmailService');
+const { effectivePrice, isPromotionActive } = require('../utils/pricing');
 const validTypes = ['GENERAL','PARTNERSHIP','PRODUCT'];
 const validStatuses = ['NEW','CONTACTED','CLOSED'];
 function validateCreate(data, hasItems) {
@@ -27,14 +28,18 @@ function priceToCents(value) {
 
 function makeSummary(items, totalQuantity, totalCents, language = 'fr') {
   const labels = language === 'ar'
-    ? { title: 'طلب منتجات خاترة', quantity: 'الكمية', unit: 'سعر الوحدة', line: 'إجمالي المنتج', totalQuantity: 'الكمية الإجمالية', total: 'الإجمالي' }
-    : { title: 'Demande de produits Khatra', quantity: 'Quantité', unit: 'Prix unitaire', line: 'Total produit', totalQuantity: 'Quantité totale', total: 'Total' };
+    ? { title: 'طلب منتجات خاترة', quantity: 'الكمية', unit: 'سعر الوحدة', original: 'السعر الأصلي', promotion: 'التخفيض', line: 'إجمالي المنتج', totalQuantity: 'الكمية الإجمالية', total: 'الإجمالي' }
+    : { title: 'Demande de produits Khatra', quantity: 'Quantité', unit: 'Prix unitaire', original: 'Prix normal', promotion: 'Promotion', line: 'Total produit', totalQuantity: 'Quantité totale', total: 'Total' };
   return [
     labels.title,
     '',
     ...items.flatMap(item => [
       item.productName,
       `${labels.quantity} : ${item.quantity}`,
+      ...(item.promo === null ? [] : [
+        `${labels.original} : ${money(priceToCents(item.originalPrice))} MAD`,
+        `${labels.promotion} : -${item.promo}%`,
+      ]),
       `${labels.unit} : ${money(item.unitPriceCents)} MAD`,
       `${labels.line} : ${money(item.lineTotalCents)} MAD`,
       '',
@@ -66,17 +71,22 @@ async function priceItems(tx, requestedItems, language = 'fr') {
     include: { images: { orderBy: { displayOrder: 'asc' }, take: 1 } },
   });
   const byId = new Map(products.map(product => [product.id, product]));
+  const pricingTime = new Date();
   const items = normalized.map(({ productId, quantity }) => {
     const product = byId.get(productId);
     if (!product) throw new AppError(`Product ${productId} is unavailable`, 400);
     if (product.price === null) throw new AppError(`${product.name} has no published price and cannot be added to the cart`, 400);
-    const unitPriceCents = priceToCents(product.price.toString());
+    const activePromotion = isPromotionActive(product, pricingTime);
+    const unitPriceCents = priceToCents(effectivePrice(product, pricingTime));
     const lineTotalCents = unitPriceCents * BigInt(quantity);
     return {
       productId,
       productName: product.name,
       productImage: product.images[0]?.imageUrl || null,
       unitPrice: money(unitPriceCents),
+      originalPrice: product.price.toString(),
+      promo: activePromotion ? Number(product.promo) : null,
+      promoExpiresAt: activePromotion ? product.promoExpiresAt : null,
       quantity,
       lineTotal: money(lineTotalCents),
       unitPriceCents,
@@ -101,6 +111,9 @@ exports.quote = async data => {
       productName: item.productName,
       productImage: item.productImage,
       unitPrice: Number(item.unitPrice),
+      originalPrice: Number(item.originalPrice),
+      promo: item.promo,
+      promoExpiresAt: item.promoExpiresAt,
       quantity: item.quantity,
       lineTotal: Number(item.lineTotal),
     })),
