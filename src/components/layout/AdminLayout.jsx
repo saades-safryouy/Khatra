@@ -7,11 +7,11 @@ import { cn, initials } from '../../lib/utils';
 import khatraLogo from '../../../public/khatra_logo_old.png';
 
 const navigation = [
-  { label: 'Overview', to: '/admin/dashboard', icon: Grid2X2 }, { label: 'Products', to: '/admin/products', icon: Package },
-  { label: 'Categories', to: '/admin/categories', icon: Tags }, { label: 'Stores', to: '/admin/stores', icon: Store },
-  { label: 'Franchises', to: '/admin/franchises', icon: Building2 }, { label: 'Locations', to: '/admin/locations', icon: MapPin },
-  { label: 'Inquiries', to: '/admin/inquiries', icon: MessageSquare },
-  { label: 'Admin Accounts', to: '/admin/accounts', icon: Users },
+  { label: 'Tableau de bord', to: '/admin/dashboard', icon: Grid2X2 }, { label: 'Produits', to: '/admin/products', icon: Package },
+  { label: 'Catégories', to: '/admin/categories', icon: Tags }, { label: 'Points de vente', to: '/admin/stores', icon: Store },
+  { label: 'Franchises', to: '/admin/franchises', icon: Building2 }, { label: 'Emplacements', to: '/admin/locations', icon: MapPin },
+  { label: 'Demandes', to: '/admin/inquiries', icon: MessageSquare },
+  { label: 'Administrateurs', to: '/admin/accounts', icon: Users },
 ];
 
 export default function AdminLayout({ children }) {       
@@ -22,11 +22,11 @@ export default function AdminLayout({ children }) {
     <aside className="flex shrink-0 flex-col border-b bg-white lg:fixed lg:inset-y-0 lg:w-64 lg:border-b-0 lg:border-r">
       <div className="flex h-16 items-center gap-3 px-5">
         <div className="grid h-9 w-9 place-items-center rounded-lg text-white">
-          <img src={khatraLogo} alt="Khatra Logo" />
+          <img src={khatraLogo} alt="Logo Khatra" />
         </div>
         <div>
           <p className="font-semibold text-slate-950">Khatra</p>
-          <p className="text-xs text-slate-500">Admin workspace</p>
+          <p className="text-xs text-slate-500">Espace d’administration</p>
         </div>
       </div>
       <nav className="flex gap-1 overflow-x-auto border-t px-3 py-3 lg:flex-col lg:overflow-visible lg:border-t-0 lg:py-4">
@@ -44,7 +44,7 @@ export default function AdminLayout({ children }) {
           </div>
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-slate-800">
-              {user?.firstName || 'Administrator'}
+              {user?.firstName || 'Administrateur'}
             </p>
             <p className="truncate text-xs text-slate-500">{user?.email}</p>
           </div>
@@ -56,7 +56,7 @@ export default function AdminLayout({ children }) {
           className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium text-slate-600 transition-colors hover:bg-red-50 hover:text-red-700"
         >
           <LogOut className="h-4 w-4" />
-          Sign out
+          Se déconnecter
         </button>
       </div>
     </aside>

@@ -68,9 +68,9 @@ function Stars({ rating }) {
 
 function greeting() {
   const h = new Date().getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 18) return 'Good afternoon';
-  return 'Good evening';
+  if (h < 12) return 'Bonjour';
+  if (h < 18) return 'Bon après-midi';
+  return 'Bonsoir';
 }
 
 export default function DashboardPage() {
@@ -90,7 +90,7 @@ export default function DashboardPage() {
       setUpdatedAt(new Date());
     } catch (loadError) {
       // keep showing the previous data if a refresh fails
-      setError(loadError.uiMessage || 'Unable to load dashboard analytics.');
+      setError('Impossible de charger les statistiques du tableau de bord.');
     } finally {
       setLoading(false);
     }
@@ -128,11 +128,11 @@ export default function DashboardPage() {
 
   const overviewCards = stats
     ? [
-        { label: 'Products', value: stats.products, icon: Package, link: '/admin/products' },
-        { label: 'Categories', value: stats.byCategory.length, icon: Tags, link: '/admin/categories' },
-        { label: 'Points of sale', value: stats.pointsOfSale, icon: Store, link: '/admin/stores' },
-        { label: 'Locations', value: stats.locationsTotal, icon: MapPin, link: '/admin/locations' },
-        { label: 'Inquiries', value: stats.inquiries, icon: MessageSquare, link: '/admin/inquiries' },
+        { label: 'Produits', value: stats.products, icon: Package, link: '/admin/products' },
+        { label: 'Catégories', value: stats.byCategory.length, icon: Tags, link: '/admin/categories' },
+        { label: 'Points de vente', value: stats.pointsOfSale, icon: Store, link: '/admin/stores' },
+        { label: 'Emplacements', value: stats.locationsTotal, icon: MapPin, link: '/admin/locations' },
+        { label: 'Demandes', value: stats.inquiries, icon: MessageSquare, link: '/admin/inquiries' },
         { label: 'Franchises', value: stats.franchises, icon: Building2, link: '/admin/franchises' },
       ]
     : [];
@@ -145,22 +145,22 @@ export default function DashboardPage() {
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-[#000000]">
-            {new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}
+            {new Intl.DateTimeFormat('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">
-            {greeting()}, {user?.firstName || 'Admin'}
+            {greeting()}, {user?.firstName || 'Administrateur'}
           </h1>
-          <p className="mt-2 text-sm text-slate-500">A quick overview of your Khatra workspace.</p>
+          <p className="mt-2 text-sm text-slate-500">Vue d’ensemble de votre espace Khatra.</p>
         </div>
         <div className="flex items-center gap-3">
           {updatedAt && (
             <span className="hidden text-xs text-slate-400 sm:inline" aria-live="polite">
-              Updated {new Intl.DateTimeFormat('en-GB', { hour: '2-digit', minute: '2-digit' }).format(updatedAt)}
+              Mis à jour à {new Intl.DateTimeFormat('fr-FR', { hour: '2-digit', minute: '2-digit' }).format(updatedAt)}
             </span>
           )}
           <Button variant="secondary" onClick={loadAnalytics} disabled={loading}>
             <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-            Refresh
+            Actualiser
           </Button>
         </div>
       </div>
@@ -168,7 +168,7 @@ export default function DashboardPage() {
       {error && (
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
           <span>{error}</span>
-          <Button variant="secondary" size="sm" onClick={loadAnalytics} disabled={loading}>Retry</Button>
+          <Button variant="secondary" size="sm" onClick={loadAnalytics} disabled={loading}>Réessayer</Button>
         </div>
       )}
 
@@ -195,13 +195,13 @@ export default function DashboardPage() {
           </div>
 
           {/* insights */}
-          <section className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3" aria-label="Highlights">
+          <section className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3" aria-label="Points clés">
             <div className="k-card flex items-center gap-4 p-5">
               <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-amber-50 text-amber-600">
                 <Star className="h-5 w-5" />
               </div>
               <div className="min-w-0">
-                <p className="text-sm font-medium text-slate-700">Google rating</p>
+                <p className="text-sm font-medium text-slate-700">Note Google</p>
                 {stats.google.available && stats.google.rating !== null ? (
                   <div className="mt-1 flex items-center gap-2">
                     <p className="text-xl font-semibold text-slate-950">{stats.google.rating.toFixed(1)}</p>
@@ -209,45 +209,45 @@ export default function DashboardPage() {
                   </div>
                 ) : (
                   <p className="mt-1 text-xl font-semibold text-slate-950">
-                    {stats.google.available ? 'Unavailable' : 'Not configured'}
+                    {stats.google.available ? 'Indisponible' : 'Non configurée'}
                   </p>
                 )}
                 {stats.google.available && stats.google.reviewCount != null && (
-                  <p className="text-xs text-slate-500">{stats.google.reviewCount} Google reviews</p>
+                  <p className="text-xs text-slate-500">{stats.google.reviewCount} avis Google</p>
                 )}
               </div>
             </div>
 
             <div className="k-card p-5">
-              <p className="text-sm font-medium text-slate-700">Network coverage</p>
+              <p className="text-sm font-medium text-slate-700">Couverture du réseau</p>
               <p className="mt-1 text-xl font-semibold text-slate-950">
-                {Object.keys(stats.byCity).length} {Object.keys(stats.byCity).length === 1 ? 'city' : 'cities'}
+                {Object.keys(stats.byCity).length} {Object.keys(stats.byCity).length === 1 ? 'ville' : 'villes'}
               </p>
               <p className="mt-1 text-xs text-slate-500">
                 {stats.topCity
-                  ? `Most locations in ${stats.topCity[0]} (${stats.topCity[1]}) · ${stats.pointsOfSale} points of sale`
-                  : `${stats.pointsOfSale} points of sale across ${stats.locationsTotal} locations`}
+                  ? `Le plus grand nombre d’emplacements à ${stats.topCity[0]} (${stats.topCity[1]}) · ${stats.pointsOfSale} points de vente`
+                  : `${stats.pointsOfSale} points de vente dans ${stats.locationsTotal} emplacements`}
               </p>
             </div>
 
             <div className="k-card p-5">
-              <p className="text-sm font-medium text-slate-700">Catalogue health</p>
+              <p className="text-sm font-medium text-slate-700">État du catalogue</p>
               {stats.activeShare !== null ? (
                 <>
                   <div className="mt-1 flex items-baseline gap-2">
                     <p className="text-xl font-semibold text-slate-950">{stats.activeShare}%</p>
-                    <p className="text-xs text-slate-500">of products active</p>
+                    <p className="text-xs text-slate-500">des produits sont actifs</p>
                   </div>
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100" role="img" aria-label={`${stats.activeShare}% of products are active`}>
                     <div className="h-full rounded-full bg-[#2929a4] transition-all duration-700" style={{ width: `${stats.activeShare}%` }} />
                   </div>
                 </>
               ) : (
-                <p className="mt-1 text-xl font-semibold text-slate-950">{stats.products} products</p>
+                <p className="mt-1 text-xl font-semibold text-slate-950">{stats.products} produits</p>
               )}
               {stats.topCategory && (
                 <p className="mt-2 text-xs text-slate-500">
-                  Largest category: {stats.topCategory.name} ({stats.topCategory.count})
+                  Catégorie principale : {stats.topCategory.name} ({stats.topCategory.count})
                 </p>
               )}
             </div>
@@ -256,34 +256,37 @@ export default function DashboardPage() {
           {/* charts */}
           <section className="mt-8" aria-labelledby="analytics-heading">
             <div className="mb-4">
-              <h2 id="analytics-heading" className="text-lg font-semibold text-slate-950">Analytics</h2>
-              <p className="mt-1 text-sm text-slate-500">Live summaries from the Khatra database.</p>
+              <h2 id="analytics-heading" className="text-lg font-semibold text-slate-950">Statistiques</h2>
+              <p className="mt-1 text-sm text-slate-500">Données actualisées depuis la base Khatra.</p>
             </div>
             <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
               <AnalyticsChart
-                title="Products by category"
+                title="Produits par catégorie"
                 type="pie"
                 data={stats.byCategory.map(({ name, count }) => ({ name, value: count }))}
               />
               <AnalyticsChart
-                title="Products by status"
-                data={Object.entries(stats.byStatus).map(([name, value]) => ({ name, value }))}
+                title="Produits par statut"
+                data={Object.entries(stats.byStatus).map(([name, value]) => ({ name: name === 'ACTIVE' ? 'Actifs' : name === 'INACTIVE' ? 'Inactifs' : name, value }))}
               />
               <AnalyticsChart
-                title="Locations by city"
+                title="Emplacements par ville"
                 data={Object.entries(stats.byCity).map(([name, value]) => ({ name, value }))}
               />
               <AnalyticsChart
-                title="Inquiries by type"
+                title="Demandes par type"
                 type="pie"
-                note="The database does not currently distinguish Coffee Shop and Khatra Market franchise inquiries."
-                data={stats.inquiriesByType.map(({ type, count }) => ({ name: type, value: count }))}
+                note="La base de données ne distingue pas encore les demandes de franchise Coffee Shop et Khatra Market."
+                data={stats.inquiriesByType.map(({ type, count }) => ({
+                  name: ({ GENERAL: 'Générales', PARTNERSHIP: 'Partenariat', PRODUCT: 'Produits' })[type] || type,
+                  value: count,
+                }))}
               />
             </div>
           </section>
         </>
       ) : (
-        !error && <div className="k-card p-8 text-center text-sm text-slate-500">No analytics data available.</div>
+        !error && <div className="k-card p-8 text-center text-sm text-slate-500">Aucune statistique disponible.</div>
       )}
     </motion.div>
   );

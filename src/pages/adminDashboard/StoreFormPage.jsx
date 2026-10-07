@@ -53,7 +53,7 @@ export default function StoreFormPage() {
         }
       } catch (err) {
         if (!isMounted) return;
-        showToast(err?.response?.data?.message || 'Failed to load store', 'error');
+        showToast(err?.uiMessage || 'Impossible de charger le point de vente.', 'error');
         navigate('/admin/stores');
       } finally {
         if (isMounted) setLoading(false);
@@ -88,9 +88,9 @@ export default function StoreFormPage() {
 
   const validate = () => {
     const errs = {};
-    if (!formData.name.trim()) errs.name = 'Store name is required';
-    if (!formData.locationId) errs.locationId = 'Please select a location / city';
-    if (!formData.address.trim()) errs.address = 'Store address is required';
+    if (!formData.name.trim()) errs.name = 'Le nom du point de vente est obligatoire.';
+    if (!formData.locationId) errs.locationId = 'Veuillez sélectionner une ville ou un emplacement.';
+    if (!formData.address.trim()) errs.address = 'L’adresse du point de vente est obligatoire.';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -98,7 +98,7 @@ export default function StoreFormPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
-      showToast('Please correct highlighted errors', 'error');
+      showToast('Veuillez corriger les erreurs signalées.', 'error');
       return;
     }
     setSaving(true);
@@ -115,14 +115,14 @@ export default function StoreFormPage() {
 
       if (id) {
         await storeApi.update(id, payload, imageFile);
-        showToast('Store updated successfully');
+        showToast('Point de vente mis à jour avec succès.');
       } else {
         await storeApi.create(payload, imageFile);
-        showToast('Store created successfully');
+        showToast('Point de vente créé avec succès.');
       }
       navigate('/admin/stores');
     } catch (err) {
-      showToast(err?.response?.data?.message || 'Failed to save store', 'error');
+      showToast(err?.uiMessage || 'Impossible d’enregistrer le point de vente.', 'error');
     } finally {
       setSaving(false);
     }
@@ -151,25 +151,25 @@ export default function StoreFormPage() {
           </Button>
           <div>
             <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
-              <StoreIcon className="h-3.5 w-3.5" /> Network / Stores
+              <StoreIcon className="h-3.5 w-3.5" /> Réseau / Points de vente
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-950">
-              {id ? 'Edit Store' : 'New Store'}
+              {id ? 'Modifier le point de vente' : 'Nouveau point de vente'}
             </h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" onClick={() => navigate('/admin/stores')} disabled={saving}>
-            Cancel
+            Annuler
           </Button>
           <Button onClick={handleSubmit} disabled={saving} className="min-w-[120px]">
             {saving ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                <Loader2 className="h-4 w-4 animate-spin" /> Enregistrement…
               </>
             ) : (
               <>
-                <Check className="h-4 w-4" /> {id ? 'Save Changes' : 'Create Store'}
+                <Check className="h-4 w-4" /> {id ? 'Enregistrer les modifications' : 'Créer le point de vente'}
               </>
             )}
           </Button>
@@ -178,23 +178,23 @@ export default function StoreFormPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="k-card p-6">
-          <h2 className="text-base font-semibold text-slate-900 mb-1">Store Information</h2>
-          <p className="text-xs text-slate-500 mb-5">Name, location area, physical address, and contact details.</p>
+          <h2 className="text-base font-semibold text-slate-900 mb-1">Informations du point de vente</h2>
+          <p className="text-xs text-slate-500 mb-5">Nom, emplacement, adresse et coordonnées.</p>
 
           <div className="space-y-4">
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input
-                label="Store Name"
+                label="Nom du point de vente"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
-                placeholder="e.g. Khatra Coffee Corner - Maarif"
+                placeholder="Ex. : Khatra Coffee Corner - Maarif"
                 error={errors.name}
                 required
               />
 
               <div>
-                <label className="k-label" htmlFor="locationId">Region / City Area</label>
+                <label className="k-label" htmlFor="locationId">Région / Ville</label>
                 <select
                   id="locationId"
                   name="locationId"
@@ -203,7 +203,7 @@ export default function StoreFormPage() {
                   className="k-input bg-white"
                   required
                 >
-                  <option value="">Select a region / city</option>
+                  <option value="">Sélectionner une région / ville</option>
                   {locations.map((loc) => (
                     <option key={loc.id} value={loc.id}>
                       {loc.name} ({loc.city})
@@ -215,18 +215,18 @@ export default function StoreFormPage() {
             </div>
 
             <Input
-              label="Physical Address"
+              label="Adresse"
               name="address"
               value={formData.address}
               onChange={handleChange}
-              placeholder="e.g. 45 Bd Al Massira Al Khadra, Casablanca"
+              placeholder="Ex. : 45 Bd Al Massira Al Khadra, Casablanca"
               error={errors.address}
               required
             />
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Input
-                label="Phone Number"
+                label="Téléphone"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
@@ -234,36 +234,36 @@ export default function StoreFormPage() {
               />
 
               <Input
-                label="Google Maps URL"
+                label="Lien Google Maps"
                 name="googleMapsUrl"
                 value={formData.googleMapsUrl}
                 onChange={handleChange}
                 placeholder="https://maps.google.com/?q=..."
-                hint="Link or coordinates for navigation"
+                hint="Lien ou coordonnées GPS"
               />
             </div>
 
             <div>
-              <label className="k-label" htmlFor="description">Store Notes / Hours</label>
+              <label className="k-label" htmlFor="description">Informations / Horaires</label>
               <textarea
                 id="description"
                 name="description"
                 rows={3}
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Opening hours, parking info, services..."
+                placeholder="Horaires d’ouverture, stationnement, services…"
                 className="k-input h-auto resize-y py-2 text-sm"
               />
             </div>
 
             <div>
-              <label className="k-label">Store Photo</label>
+              <label className="k-label">Photo du point de vente</label>
               <div className="flex flex-col sm:flex-row items-start gap-4">
                 {(imagePreview || currentImage) && (
                   <div className="relative group h-24 w-32 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex-shrink-0">
                     <img
                       src={imagePreview || mediaUrl(currentImage)}
-                      alt="Store storefront"
+                      alt="Vitrine du point de vente"
                       className="h-full w-full object-cover"
                     />
                     {imagePreview && (
@@ -271,7 +271,7 @@ export default function StoreFormPage() {
                         type="button"
                         onClick={handleRemoveImage}
                         className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700"
-                        title="Remove new image"
+                        title="Retirer la nouvelle image"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -285,9 +285,9 @@ export default function StoreFormPage() {
                   >
                     <Upload className="h-5 w-5 text-slate-500 mb-1" />
                     <span className="text-xs font-medium text-slate-800">
-                      {imagePreview ? 'Change photo' : 'Upload photo'}
+                      {imagePreview ? 'Remplacer la photo' : 'Ajouter une photo'}
                     </span>
-                    <span className="text-[11px] text-slate-400 mt-0.5">PNG, JPG, WEBP up to 5MB</span>
+                    <span className="text-[11px] text-slate-400 mt-0.5">PNG, JPG, WEBP (5 Mo maximum)</span>
                     <input
                       id="store-image"
                       type="file"
@@ -310,8 +310,8 @@ export default function StoreFormPage() {
                   className="h-4 w-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
                 <div>
-                  <span className="text-sm font-medium text-slate-900">Active Store</span>
-                  <p className="text-xs text-slate-500">Show this point of sale in locator and map.</p>
+                  <span className="text-sm font-medium text-slate-900">Point de vente actif</span>
+                  <p className="text-xs text-slate-500">Afficher ce point de vente dans le localisateur et sur la carte.</p>
                 </div>
               </label>
             </div>

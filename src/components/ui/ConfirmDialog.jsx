@@ -13,9 +13,9 @@ const ICON_STYLE = {
 };
 
 export function ConfirmDialog({
-  title = 'Confirm action',
+  title = 'Confirmer cette action',
   message,
-  confirmLabel = 'Delete',
+  confirmLabel = 'Supprimer',
   variant = 'danger',
   onClose,
   onConfirm,
@@ -29,7 +29,7 @@ export function ConfirmDialog({
       await onConfirm?.();
       onClose?.();
     } catch (error) {
-      toast(error?.uiMessage || error?.message || 'Unable to complete this action', 'error');
+      toast(error?.uiMessage || 'Impossible de terminer cette action.', 'error');
     } finally {
       setLoading(false);
     }
@@ -63,7 +63,7 @@ export function ConfirmDialog({
                 <button
                   type="button"
                   disabled={loading}
-                  aria-label="Close"
+                  aria-label="Fermer"
                   className="absolute right-3 top-3 rounded p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 disabled:opacity-50"
                 >
                   <X className="h-5 w-5" />
@@ -86,7 +86,7 @@ export function ConfirmDialog({
               <div className="mt-6 flex flex-col-reverse justify-center gap-3 sm:flex-row">
                 <Dialog.Close asChild>
                   <Button variant="secondary" disabled={loading} className="w-full sm:w-auto">
-                    Cancel
+                    Annuler
                   </Button>
                 </Dialog.Close>
                 <Button
@@ -96,7 +96,7 @@ export function ConfirmDialog({
                   className="w-full sm:w-auto"
                 >
                   {loading && <LoaderCircle className="h-4 w-4 animate-spin" />}
-                  {loading ? 'Working...' : confirmLabel}
+                  {loading ? 'Traitement en cours…' : confirmLabel}
                 </Button>
               </div>
             </motion.div>

@@ -22,7 +22,7 @@ export default function LocationsPage() {
       setLocations(data.items || []);
       setMeta(data.meta || {});
     } catch {
-      showToast('Failed to load locations', 'error');
+      showToast('Impossible de charger les emplacements.', 'error');
     } finally {
       setLoading(false);
     }
@@ -37,17 +37,17 @@ export default function LocationsPage() {
     try {
       await locationApi.remove(pendingDelete.id);
       setPendingDelete(null);
-      showToast('Location deleted successfully');
+      showToast('Emplacement supprimé avec succès.');
       loadLocations();
     } catch (err) {
-      showToast(err?.response?.data?.message || 'Failed to delete location', 'error');
+      showToast(err?.uiMessage || 'Impossible de supprimer l’emplacement.', 'error');
     }
   };
 
   const columns = [
     {
       key: 'name',
-      label: 'Location / City',
+      label: 'Emplacement / Ville',
       render: (row) => (
         <div>
           <p className="font-medium text-slate-900">{row.name}</p>
@@ -57,7 +57,7 @@ export default function LocationsPage() {
     },
     {
       key: 'city',
-      label: 'City / Region',
+      label: 'Ville / Région',
       render: (row) => (
         <span className="text-slate-600">
           {row.city} {row.region ? '(' + row.region + ')' : ''}
@@ -66,19 +66,19 @@ export default function LocationsPage() {
     },
     {
       key: 'stores',
-      label: 'Stores',
+      label: 'Points de vente',
       render: (row) => (
         <span className="text-slate-600 font-medium">
-          {row.stores?.length ?? 0} stores
+          {row.stores?.length ?? 0} points de vente
         </span>
       ),
     },
     {
       key: 'active',
-      label: 'Status',
+      label: 'Statut',
       render: (row) => (
         <Badge variant={row.active ? 'success' : 'default'}>
-          {row.active ? 'ACTIVE' : 'INACTIVE'}
+          {row.active ? 'Actif' : 'Inactif'}
         </Badge>
       ),
     },
@@ -91,7 +91,7 @@ export default function LocationsPage() {
             variant="ghost"
             size="icon"
             onClick={() => navigate('/admin/locations/' + row.id + '/edit')}
-            aria-label="Edit"
+            aria-label="Modifier"
           >
             <Pencil className="h-4 w-4" />
           </Button>
@@ -100,7 +100,7 @@ export default function LocationsPage() {
             size="icon"
             className="text-red-600 hover:bg-red-50 hover:text-red-700"
             onClick={() => setPendingDelete(row)}
-            aria-label="Delete"
+            aria-label="Supprimer"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -114,13 +114,13 @@ export default function LocationsPage() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="mb-2 flex items-center gap-2 text-sm text-slate-500">
-            <MapPin className="h-4 w-4" /> Network
+            <MapPin className="h-4 w-4" /> Réseau
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Locations</h1>
-          <p className="mt-1 text-sm text-slate-500">Manage operating cities and coverage regions.</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Emplacements</h1>
+          <p className="mt-1 text-sm text-slate-500">Gérer les villes d’activité et les zones couvertes.</p>
         </div>
         <Button onClick={() => navigate('/admin/locations/new')}>
-          <Plus className="h-4 w-4" /> New location
+          <Plus className="h-4 w-4" /> Ajouter un emplacement
         </Button>
       </div>
 
@@ -131,19 +131,19 @@ export default function LocationsPage() {
           <DataTable
             columns={columns}
             data={locations}
-            emptyMessage="No locations found"
+            emptyMessage="Aucun emplacement trouvé"
             onRowClick={(row) => navigate('/admin/locations/' + row.id + '/edit')}
           />
           {meta.total !== undefined && (
-            <p className="mt-3 text-sm text-slate-500">{meta.total} total locations</p>
+            <p className="mt-3 text-sm text-slate-500">{meta.total} emplacements au total</p>
           )}
         </>
       )}
 
       {pendingDelete && (
         <ConfirmDialog
-          title="Delete location?"
-          message={'“' + pendingDelete.name + '” will be removed. Associated stores must be reassigned.'}
+          title="Supprimer l’emplacement ?"
+          message={'« ' + pendingDelete.name + ' » sera supprimé. Les points de vente associés devront être réaffectés.'}
           onClose={() => setPendingDelete(null)}
           onConfirm={remove}
         />

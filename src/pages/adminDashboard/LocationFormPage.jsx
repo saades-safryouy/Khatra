@@ -44,7 +44,7 @@ export default function LocationFormPage() {
         })
         .catch(() => {
           if (!isMounted) return;
-          showToast('Failed to load location', 'error');
+          showToast('Impossible de charger l’emplacement.', 'error');
           navigate('/admin/locations');
         })
         .finally(() => {
@@ -72,9 +72,9 @@ export default function LocationFormPage() {
 
   const validate = () => {
     const errs = {};
-    if (!formData.name.trim()) errs.name = 'Location name is required';
-    if (!formData.slug.trim()) errs.slug = 'Slug is required';
-    if (!formData.city.trim()) errs.city = 'City name is required';
+    if (!formData.name.trim()) errs.name = 'Le nom de l’emplacement est obligatoire.';
+    if (!formData.slug.trim()) errs.slug = 'L’identifiant URL est obligatoire.';
+    if (!formData.city.trim()) errs.city = 'Le nom de la ville est obligatoire.';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -82,7 +82,7 @@ export default function LocationFormPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
-      showToast('Please correct highlighted errors', 'error');
+      showToast('Veuillez corriger les erreurs signalées.', 'error');
       return;
     }
     setSaving(true);
@@ -98,14 +98,14 @@ export default function LocationFormPage() {
 
       if (id) {
         await locationApi.update(id, payload);
-        showToast('Location updated successfully');
+        showToast('Emplacement mis à jour avec succès.');
       } else {
         await locationApi.create(payload);
-        showToast('Location created successfully');
+        showToast('Emplacement créé avec succès.');
       }
       navigate('/admin/locations');
     } catch (err) {
-      showToast(err?.response?.data?.message || 'Failed to save location', 'error');
+      showToast(err?.uiMessage || 'Impossible d’enregistrer l’emplacement.', 'error');
     } finally {
       setSaving(false);
     }
@@ -134,25 +134,25 @@ export default function LocationFormPage() {
           </Button>
           <div>
             <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
-              <MapPin className="h-3.5 w-3.5" /> Network / Locations
+              <MapPin className="h-3.5 w-3.5" /> Réseau / Emplacements
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-950">
-              {id ? 'Edit Location' : 'New Location'}
+              {id ? 'Modifier l’emplacement' : 'Nouvel emplacement'}
             </h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" onClick={() => navigate('/admin/locations')} disabled={saving}>
-            Cancel
+            Annuler
           </Button>
           <Button onClick={handleSubmit} disabled={saving} className="min-w-[120px]">
             {saving ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                <Loader2 className="h-4 w-4 animate-spin" /> Enregistrement…
               </>
             ) : (
               <>
-                <Check className="h-4 w-4" /> {id ? 'Save Changes' : 'Create Location'}
+                <Check className="h-4 w-4" /> {id ? 'Enregistrer les modifications' : 'Créer l’emplacement'}
               </>
             )}
           </Button>
@@ -161,17 +161,17 @@ export default function LocationFormPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="k-card p-6">
-          <h2 className="text-base font-semibold text-slate-900 mb-1">Location Info</h2>
-          <p className="text-xs text-slate-500 mb-5">Define region name, URL identifier, and city group.</p>
+          <h2 className="text-base font-semibold text-slate-900 mb-1">Informations sur l’emplacement</h2>
+          <p className="text-xs text-slate-500 mb-5">Définir le nom, l’identifiant URL et la ville.</p>
 
           <div className="space-y-4">
             <Input
-              label="Location Name"
+              label="Nom de l’emplacement"
               name="name"
               value={formData.name}
               onChange={handleChange}
               onBlur={() => !formData.slug && handleAutoSlug()}
-              placeholder="e.g. Grand Casablanca"
+              placeholder="Ex. : Grand Casablanca"
               error={errors.name}
               required
             />
@@ -185,7 +185,7 @@ export default function LocationFormPage() {
                     onClick={handleAutoSlug}
                     className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
                   >
-                    <Sparkles className="h-3 w-3" /> Auto
+                    <Sparkles className="h-3 w-3" /> Générer
                   </button>
                 </div>
                 <input
@@ -201,7 +201,7 @@ export default function LocationFormPage() {
               </div>
 
               <Input
-                label="City"
+                label="Ville"
                 name="city"
                 value={formData.city}
                 onChange={handleChange}
@@ -212,7 +212,7 @@ export default function LocationFormPage() {
             </div>
 
             <Input
-              label="Region / Province (Optional)"
+              label="Région / Province (facultatif)"
               name="region"
               value={formData.region}
               onChange={handleChange}
@@ -227,7 +227,7 @@ export default function LocationFormPage() {
                 rows={3}
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Coverage notes or area details..."
+                placeholder="Informations sur la zone couverte…"
                 className="k-input h-auto resize-y py-2 text-sm"
               />
             </div>
@@ -242,8 +242,8 @@ export default function LocationFormPage() {
                   className="h-4 w-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
                 <div>
-                  <span className="text-sm font-medium text-slate-900">Active Location</span>
-                  <p className="text-xs text-slate-500">Enable stores to be listed in this area.</p>
+                  <span className="text-sm font-medium text-slate-900">Emplacement actif</span>
+                  <p className="text-xs text-slate-500">Autoriser l’affichage des points de vente de cette zone.</p>
                 </div>
               </label>
             </div>

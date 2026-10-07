@@ -21,7 +21,7 @@ import DashboardLayout from './components/layout/AdminLayout';
 
 function ProtectedRoute({ children }) {
   const { user, loading } = useAuth();
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-950">Loading...</div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-950">Chargement…</div>;
   if (!user) return <Navigate to="/admin/login" replace />;
   return <>{children}</>;
 }
@@ -35,7 +35,7 @@ function MainApp() {
   }, [restore]);
 
   if (loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-950">Loading App...</div>;
+    return <div className="min-h-screen flex items-center justify-center bg-slate-50 text-slate-950">Chargement de l’application…</div>;
   }
 
   return (
@@ -94,4 +94,3 @@ function App() {
 }
 
 export default App;
-

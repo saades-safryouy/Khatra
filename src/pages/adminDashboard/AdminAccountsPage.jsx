@@ -12,7 +12,7 @@ const PAGE_SIZE = 10;
 function displayDate(value) {
   if (!value) return '—';
   const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? '—' : new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' }).format(date);
+  return Number.isNaN(date.getTime()) ? '—' : new Intl.DateTimeFormat('fr-FR', { dateStyle: 'medium' }).format(date);
 }
 
 export default function AdminAccountsPage() {
@@ -35,7 +35,7 @@ export default function AdminAccountsPage() {
       setAccounts(result.items);
       setMeta(result.meta || { page, pages: 1, total: result.items.length });
     } catch (error) {
-      setLoadError(error.uiMessage || 'Unable to load administrator accounts.');
+      setLoadError('Impossible de charger les comptes administrateurs.');
     } finally {
       setLoading(false);
     }
@@ -54,17 +54,17 @@ export default function AdminAccountsPage() {
       await adminAccountApi.create(form);
       if (page === 1) await loadAccounts();
       else setPage(1);
-      showToastMessage('Administrator account created.');
+      showToastMessage('Compte administrateur créé.');
     } else if (dialog.mode === 'edit') {
       await adminAccountApi.update(dialog.account.id, {
         firstName: form.firstName,
         lastName: form.lastName,
         email: form.email,
       });
-      showToastMessage('Administrator details updated.');
+      showToastMessage('Informations administrateur mises à jour.');
     } else {
       await adminAccountApi.changePassword(dialog.account.id, form.password);
-      showToastMessage('Administrator password updated.');
+      showToastMessage('Mot de passe administrateur mis à jour.');
     }
     if (dialog.mode !== 'create') await loadAccounts();
   };
@@ -77,11 +77,11 @@ export default function AdminAccountsPage() {
         await adminAccountApi.remove(pendingAction.account.id);
         if (accounts.length === 1 && page > 1) setPage((current) => current - 1);
         else await loadAccounts();
-        showToastMessage('Administrator account deleted.');
+        showToastMessage('Compte administrateur supprimé.');
       } else {
         await adminAccountApi.update(pendingAction.account.id, { active: false });
         await loadAccounts();
-        showToastMessage('Administrator deactivated.');
+        showToastMessage('Compte administrateur désactivé.');
       }
       setPendingAction(null);
     } finally {
@@ -95,29 +95,29 @@ export default function AdminAccountsPage() {
       await loadAccounts();
       showToastMessage('Administrator activated.');
     } catch (error) {
-      showToastMessage(error.uiMessage || 'Unable to activate administrator.', 'error');
+      showToastMessage('Impossible d’activer le compte administrateur.', 'error');
     }
   };
 
   const columns = useMemo(() => [
-    { key: 'name', label: 'Name', render: (account) => <span className="font-medium text-slate-900">{account.firstName} {account.lastName}</span> },
-    { key: 'email', label: 'Email' },
-    { key: 'role', label: 'Role', render: () => <Badge variant="info">ADMIN</Badge> },
-    { key: 'active', label: 'Status', render: (account) => <Badge variant={account.active ? 'success' : 'danger'}>{account.active ? 'Active' : 'Inactive'}</Badge> },
-    { key: 'createdAt', label: 'Created', render: (account) => displayDate(account.createdAt) },
+    { key: 'name', label: 'Nom', render: (account) => <span className="font-medium text-slate-900">{account.firstName} {account.lastName}</span> },
+    { key: 'email', label: 'Adresse e-mail' },
+    { key: 'role', label: 'Rôle', render: () => <Badge variant="info">Administrateur</Badge> },
+    { key: 'active', label: 'Statut', render: (account) => <Badge variant={account.active ? 'success' : 'danger'}>{account.active ? 'Actif' : 'Inactif'}</Badge> },
+    { key: 'createdAt', label: 'Créé le', render: (account) => displayDate(account.createdAt) },
     {
       key: 'actions',
       label: 'Actions',
       render: (account) => (
         <div className="flex items-center gap-1">
-          <Button variant="ghost" size="icon" aria-label={`Edit ${account.email}`} title="Edit" onClick={() => setDialog({ mode: 'edit', account })}><Pencil className="h-4 w-4" /></Button>
-          <Button variant="ghost" size="icon" aria-label={`Change password for ${account.email}`} title="Change password" onClick={() => setDialog({ mode: 'password', account })}><KeyRound className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" aria-label={`Modifier ${account.email}`} title="Modifier" onClick={() => setDialog({ mode: 'edit', account })}><Pencil className="h-4 w-4" /></Button>
+          <Button variant="ghost" size="icon" aria-label={`Modifier le mot de passe de ${account.email}`} title="Modifier le mot de passe" onClick={() => setDialog({ mode: 'password', account })}><KeyRound className="h-4 w-4" /></Button>
           {account.active ? (
-            <Button variant="ghost" size="icon" aria-label={`Deactivate ${account.email}`} title="Deactivate" disabled={account.id === currentUser?.id} onClick={() => setPendingAction({ kind: 'deactivate', account })}><ShieldOff className="h-4 w-4 text-amber-600" /></Button>
+            <Button variant="ghost" size="icon" aria-label={`Désactiver ${account.email}`} title="Désactiver" disabled={account.id === currentUser?.id} onClick={() => setPendingAction({ kind: 'deactivate', account })}><ShieldOff className="h-4 w-4 text-amber-600" /></Button>
           ) : (
-            <Button variant="ghost" size="icon" aria-label={`Activate ${account.email}`} title="Activate" onClick={() => activateAccount(account)}><ShieldCheck className="h-4 w-4 text-emerald-600" /></Button>
+            <Button variant="ghost" size="icon" aria-label={`Activer ${account.email}`} title="Activer" onClick={() => activateAccount(account)}><ShieldCheck className="h-4 w-4 text-emerald-600" /></Button>
           )}
-          <Button variant="ghost" size="icon" aria-label={`Delete ${account.email}`} title="Delete" disabled={account.id === currentUser?.id} onClick={() => setPendingAction({ kind: 'delete', account })}><Trash2 className="h-4 w-4 text-red-600" /></Button>
+          <Button variant="ghost" size="icon" aria-label={`Supprimer ${account.email}`} title="Supprimer" disabled={account.id === currentUser?.id} onClick={() => setPendingAction({ kind: 'delete', account })}><Trash2 className="h-4 w-4 text-red-600" /></Button>
         </div>
       ),
     },
@@ -127,22 +127,22 @@ export default function AdminAccountsPage() {
     <div>
       <div className="mb-6 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="text-sm text-slate-500">Security & access</p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Admin Accounts</h1>
-          <p className="mt-2 text-sm text-slate-500">Manage administrator access and credentials.</p>
+          <p className="text-sm text-slate-500">Sécurité et accès</p>
+          <h1 className="mt-1 text-2xl font-semibold tracking-tight text-slate-950">Administrateurs</h1>
+          <p className="mt-2 text-sm text-slate-500">Gérer les accès et les identifiants des administrateurs.</p>
         </div>
-        <Button onClick={() => setDialog({ mode: 'create', account: null })}><Plus className="h-4 w-4" />Add admin</Button>
+        <Button onClick={() => setDialog({ mode: 'create', account: null })}><Plus className="h-4 w-4" />Ajouter un administrateur</Button>
       </div>
 
       {loadError && (
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-700" role="alert">
           <span>{loadError}</span>
-          <Button variant="secondary" size="sm" onClick={loadAccounts} disabled={loading}>Retry</Button>
+          <Button variant="secondary" size="sm" onClick={loadAccounts} disabled={loading}>Réessayer</Button>
         </div>
       )}
 
       <div className="mb-3 text-sm text-slate-500" aria-live="polite">
-        {loading ? 'Loading administrators…' : `${meta.total || 0} administrator${meta.total === 1 ? '' : 's'}`}
+        {loading ? 'Chargement des administrateurs…' : `${meta.total || 0} administrateur${meta.total === 1 ? '' : 's'}`}
       </div>
 
       <div className="hidden md:block">
@@ -150,7 +150,7 @@ export default function AdminAccountsPage() {
           columns={columns}
           data={accounts}
           loading={loading}
-          emptyMessage="No administrator accounts found."
+          emptyMessage="Aucun compte administrateur trouvé."
         />
       </div>
 
@@ -164,33 +164,33 @@ export default function AdminAccountsPage() {
                 <h2 className="truncate font-semibold text-slate-900">{account.firstName} {account.lastName}</h2>
                 <p className="mt-1 break-all text-sm text-slate-500">{account.email}</p>
               </div>
-              <Badge variant={account.active ? 'success' : 'danger'}>{account.active ? 'Active' : 'Inactive'}</Badge>
+              <Badge variant={account.active ? 'success' : 'danger'}>{account.active ? 'Actif' : 'Inactif'}</Badge>
             </div>
             <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t pt-3">
               <div>
                 <Badge variant="info">ADMIN</Badge>
-                <p className="mt-2 text-xs text-slate-500">Created {displayDate(account.createdAt)}</p>
+                <p className="mt-2 text-xs text-slate-500">Créé le {displayDate(account.createdAt)}</p>
               </div>
               <div className="flex items-center gap-1">
-                <Button variant="ghost" size="icon" aria-label={`Edit ${account.email}`} onClick={() => setDialog({ mode: 'edit', account })}><Pencil className="h-4 w-4" /></Button>
-                <Button variant="ghost" size="icon" aria-label={`Change password for ${account.email}`} onClick={() => setDialog({ mode: 'password', account })}><KeyRound className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" aria-label={`Modifier ${account.email}`} onClick={() => setDialog({ mode: 'edit', account })}><Pencil className="h-4 w-4" /></Button>
+                <Button variant="ghost" size="icon" aria-label={`Modifier le mot de passe de ${account.email}`} onClick={() => setDialog({ mode: 'password', account })}><KeyRound className="h-4 w-4" /></Button>
                 {account.active
-                  ? <Button variant="ghost" size="icon" aria-label={`Deactivate ${account.email}`} disabled={account.id === currentUser?.id} onClick={() => setPendingAction({ kind: 'deactivate', account })}><ShieldOff className="h-4 w-4 text-amber-600" /></Button>
-                  : <Button variant="ghost" size="icon" aria-label={`Activate ${account.email}`} onClick={() => activateAccount(account)}><ShieldCheck className="h-4 w-4 text-emerald-600" /></Button>}
-                <Button variant="ghost" size="icon" aria-label={`Delete ${account.email}`} disabled={account.id === currentUser?.id} onClick={() => setPendingAction({ kind: 'delete', account })}><Trash2 className="h-4 w-4 text-red-600" /></Button>
+                  ? <Button variant="ghost" size="icon" aria-label={`Désactiver ${account.email}`} disabled={account.id === currentUser?.id} onClick={() => setPendingAction({ kind: 'deactivate', account })}><ShieldOff className="h-4 w-4 text-amber-600" /></Button>
+                  : <Button variant="ghost" size="icon" aria-label={`Activer ${account.email}`} onClick={() => activateAccount(account)}><ShieldCheck className="h-4 w-4 text-emerald-600" /></Button>}
+                <Button variant="ghost" size="icon" aria-label={`Supprimer ${account.email}`} disabled={account.id === currentUser?.id} onClick={() => setPendingAction({ kind: 'delete', account })}><Trash2 className="h-4 w-4 text-red-600" /></Button>
               </div>
             </div>
           </article>
         )) : (
-          <div className="k-card grid min-h-48 place-items-center p-6 text-center text-sm text-slate-500">No administrator accounts found.</div>
+          <div className="k-card grid min-h-48 place-items-center p-6 text-center text-sm text-slate-500">Aucun compte administrateur trouvé.</div>
         )}
       </div>
 
       {meta.pages > 1 && (
         <div className="mt-5 flex items-center justify-between gap-3">
-          <Button variant="secondary" disabled={page <= 1 || loading} onClick={() => setPage((current) => current - 1)}>Previous</Button>
-          <span className="text-sm text-slate-500">Page {page} of {meta.pages}</span>
-          <Button variant="secondary" disabled={page >= meta.pages || loading} onClick={() => setPage((current) => current + 1)}>Next</Button>
+          <Button variant="secondary" disabled={page <= 1 || loading} onClick={() => setPage((current) => current - 1)}>Précédent</Button>
+          <span className="text-sm text-slate-500">Page {page} sur {meta.pages}</span>
+          <Button variant="secondary" disabled={page >= meta.pages || loading} onClick={() => setPage((current) => current + 1)}>Suivant</Button>
         </div>
       )}
 
@@ -205,11 +205,11 @@ export default function AdminAccountsPage() {
 
       {pendingAction && (
         <ConfirmDialog
-          title={pendingAction.kind === 'delete' ? 'Delete administrator?' : 'Deactivate administrator?'}
+          title={pendingAction.kind === 'delete' ? 'Supprimer l’administrateur ?' : 'Désactiver l’administrateur ?'}
           message={pendingAction.kind === 'delete'
-            ? `This permanently removes ${pendingAction.account.email}. This cannot be undone.`
-            : `${pendingAction.account.firstName} ${pendingAction.account.lastName} will no longer be able to sign in.`}
-          confirmLabel={pendingAction.kind === 'delete' ? 'Delete admin' : 'Deactivate'}
+            ? `Le compte ${pendingAction.account.email} sera supprimé définitivement. Cette action est irréversible.`
+            : `${pendingAction.account.firstName} ${pendingAction.account.lastName} ne pourra plus se connecter.`}
+          confirmLabel={pendingAction.kind === 'delete' ? 'Supprimer le compte' : 'Désactiver'}
           onClose={() => !actionLoading && setPendingAction(null)}
           onConfirm={confirmAccountAction}
         />

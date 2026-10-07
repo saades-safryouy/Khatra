@@ -19,7 +19,7 @@ export default function AnalyticsChart({
   title,
   data,
   type = 'bar',
-  emptyMessage = 'No data available yet.',
+  emptyMessage = 'Aucune donnée disponible pour le moment.',
   note,
 }) {
   const sourceData = Array.isArray(data) ? data : [];
@@ -57,7 +57,7 @@ export default function AnalyticsChart({
                 <XAxis dataKey="name" tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#64748b' }} axisLine={false} tickLine={false} />
                 <Tooltip cursor={{ fill: '#eff6ff' }} />
-                <Bar dataKey="value" name="Count" fill="#2563eb" radius={[5, 5, 0, 0]} maxBarSize={52} />
+                <Bar dataKey="value" name="Nombre" fill="#2563eb" radius={[5, 5, 0, 0]} maxBarSize={52} />
               </BarChart>
             )}
           </ResponsiveContainer>

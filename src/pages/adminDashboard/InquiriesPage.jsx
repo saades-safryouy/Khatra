@@ -23,7 +23,7 @@ export default function InquiriesPage() {
       setInquiries(data.items || []);
       setMeta(data.meta || {});
     } catch {
-      showToast('Failed to load inquiries', 'error');
+      showToast('Impossible de charger les demandes.', 'error');
     } finally {
       setLoading(false);
     }
@@ -38,10 +38,10 @@ export default function InquiriesPage() {
     try {
       await inquiryApi.remove(pendingDelete.id);
       setPendingDelete(null);
-      showToast('Inquiry deleted successfully');
+      showToast('Demande supprimée avec succès.');
       loadInquiries();
     } catch (err) {
-      showToast(err?.response?.data?.message || 'Failed to delete inquiry', 'error');
+      showToast(err?.uiMessage || 'Impossible de supprimer la demande.', 'error');
     }
   };
 
@@ -61,13 +61,13 @@ export default function InquiriesPage() {
       render: (row) => (
         <div>
           <p className="font-medium text-slate-900">{row.name}</p>
-          <p className="mt-0.5 text-xs text-slate-500">{row.company || 'Direct Contact'}</p>
+          <p className="mt-0.5 text-xs text-slate-500">{row.company || 'Contact direct'}</p>
         </div>
       ),
     },
     {
       key: 'type',
-      label: 'Subject Type',
+      label: 'Type de demande',
       render: (row) => (
         <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-medium text-slate-700">
           {inquiryLabel(row.type)}
@@ -76,7 +76,7 @@ export default function InquiriesPage() {
     },
     {
       key: 'contact',
-      label: 'Contact',
+      label: 'Coordonnées',
       render: (row) => (
         <div className="text-xs space-y-0.5">
           <div className="flex items-center gap-1 text-slate-700">
@@ -96,7 +96,7 @@ export default function InquiriesPage() {
     },
     {
       key: 'status',
-      label: 'Status',
+      label: 'Statut',
       render: (row) => (
         <Badge variant={getStatusVariant(row.status)}>
           {statusLabel(row.status)}
@@ -105,7 +105,7 @@ export default function InquiriesPage() {
     },
     {
       key: 'createdAt',
-      label: 'Received',
+      label: 'Reçue le',
       render: (row) => (
         <span className="text-xs text-slate-500 tabular-nums">
           {formatDate(row.createdAt)}
@@ -121,7 +121,7 @@ export default function InquiriesPage() {
             variant="ghost"
             size="icon"
             onClick={() => navigate('/admin/inquiries/' + row.id)}
-            aria-label="View Details"
+            aria-label="Voir les détails"
           >
             <Eye className="h-4 w-4" />
           </Button>
@@ -130,7 +130,7 @@ export default function InquiriesPage() {
             size="icon"
             className="text-red-600 hover:bg-red-50 hover:text-red-700"
             onClick={() => setPendingDelete(row)}
-            aria-label="Delete"
+            aria-label="Supprimer"
           >
             <Trash2 className="h-4 w-4" />
           </Button>
@@ -144,10 +144,10 @@ export default function InquiriesPage() {
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <div className="mb-2 flex items-center gap-2 text-sm text-slate-500">
-            <MessageSquare className="h-4 w-4" /> CRM
+            <MessageSquare className="h-4 w-4" /> Relation client
           </div>
-          <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Inquiries</h1>
-          <p className="mt-1 text-sm text-slate-500">Track and respond to incoming customer and partner inquiries.</p>
+          <h1 className="text-2xl font-semibold tracking-tight text-slate-950">Demandes</h1>
+          <p className="mt-1 text-sm text-slate-500">Suivre et traiter les demandes des clients et partenaires.</p>
         </div>
       </div>
 
@@ -158,19 +158,19 @@ export default function InquiriesPage() {
           <DataTable
             columns={columns}
             data={inquiries}
-            emptyMessage="No inquiries received yet"
+            emptyMessage="Aucune demande reçue pour le moment"
             onRowClick={(row) => navigate('/admin/inquiries/' + row.id)}
           />
           {meta.total !== undefined && (
-            <p className="mt-3 text-sm text-slate-500">{meta.total} total inquiries</p>
+            <p className="mt-3 text-sm text-slate-500">{meta.total} demandes au total</p>
           )}
         </>
       )}
 
       {pendingDelete && (
         <ConfirmDialog
-          title="Delete inquiry?"
-          message={'Inquiry from “' + pendingDelete.name + '” will be removed.'}
+          title="Supprimer la demande ?"
+          message={'La demande de « ' + pendingDelete.name + ' » sera supprimée.'}
           onClose={() => setPendingDelete(null)}
           onConfirm={remove}
         />

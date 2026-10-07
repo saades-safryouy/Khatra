@@ -42,7 +42,7 @@ export default function CategoryFormPage() {
         })
         .catch((err) => {
           if (!isMounted) return;
-          showToast(err?.response?.data?.message || 'Failed to load category', 'error');
+          showToast(err?.uiMessage || 'Impossible de charger la catégorie.', 'error');
           navigate('/admin/categories');
         })
         .finally(() => {
@@ -84,8 +84,8 @@ export default function CategoryFormPage() {
 
   const validate = () => {
     const errs = {};
-    if (!formData.name.trim()) errs.name = 'Category name is required';
-    if (!formData.slug.trim()) errs.slug = 'Slug is required';
+    if (!formData.name.trim()) errs.name = 'Le nom de la catégorie est obligatoire.';
+    if (!formData.slug.trim()) errs.slug = 'L’identifiant URL est obligatoire.';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -93,7 +93,7 @@ export default function CategoryFormPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
-      showToast('Please correct highlighted errors', 'error');
+      showToast('Veuillez corriger les erreurs signalées.', 'error');
       return;
     }
     setSaving(true);
@@ -108,14 +108,14 @@ export default function CategoryFormPage() {
 
       if (id) {
         await categoryApi.update(id, payload, imageFile);
-        showToast('Category updated successfully');
+        showToast('Catégorie mise à jour avec succès.');
       } else {
         await categoryApi.create(payload, imageFile);
-        showToast('Category created successfully');
+        showToast('Catégorie créée avec succès.');
       }
       navigate('/admin/categories');
     } catch (err) {
-      showToast(err?.response?.data?.message || 'Failed to save category', 'error');
+      showToast(err?.uiMessage || 'Impossible d’enregistrer la catégorie.', 'error');
     } finally {
       setSaving(false);
     }
@@ -144,25 +144,25 @@ export default function CategoryFormPage() {
           </Button>
           <div>
             <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
-              <Tags className="h-3.5 w-3.5" /> Catalog / Categories
+              <Tags className="h-3.5 w-3.5" /> Catalogue / Catégories
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-950">
-              {id ? 'Edit Category' : 'New Category'}
+              {id ? 'Modifier la catégorie' : 'Nouvelle catégorie'}
             </h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" onClick={() => navigate('/admin/categories')} disabled={saving}>
-            Cancel
+            Annuler
           </Button>
           <Button onClick={handleSubmit} disabled={saving} className="min-w-[120px]">
             {saving ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                <Loader2 className="h-4 w-4 animate-spin" /> Enregistrement…
               </>
             ) : (
               <>
-                <Check className="h-4 w-4" /> {id ? 'Save Changes' : 'Create Category'}
+                <Check className="h-4 w-4" /> {id ? 'Enregistrer les modifications' : 'Créer la catégorie'}
               </>
             )}
           </Button>
@@ -171,17 +171,17 @@ export default function CategoryFormPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="k-card p-6">
-          <h2 className="text-base font-semibold text-slate-900 mb-1">Category Details</h2>
-          <p className="text-xs text-slate-500 mb-5">Configure category name, slug, ordering, and media.</p>
+          <h2 className="text-base font-semibold text-slate-900 mb-1">Détails de la catégorie</h2>
+          <p className="text-xs text-slate-500 mb-5">Définir le nom, l’identifiant URL, l’ordre et l’image.</p>
 
           <div className="space-y-4">
             <Input
-              label="Category Name"
+              label="Nom de la catégorie"
               name="name"
               value={formData.name}
               onChange={handleChange}
               onBlur={() => !formData.slug && handleAutoSlug()}
-              placeholder="e.g. Café de Spécialité"
+              placeholder="Ex. : Café de spécialité"
               error={errors.name}
               required
             />
@@ -189,13 +189,13 @@ export default function CategoryFormPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="k-label mb-0" htmlFor="slug">Slug (URL key)</label>
+                  <label className="k-label mb-0" htmlFor="slug">Identifiant URL</label>
                   <button
                     type="button"
                     onClick={handleAutoSlug}
                     className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
                   >
-                    <Sparkles className="h-3 w-3" /> Auto
+                    <Sparkles className="h-3 w-3" /> Générer
                   </button>
                 </div>
                 <input
@@ -211,7 +211,7 @@ export default function CategoryFormPage() {
               </div>
 
               <div>
-                <label className="k-label" htmlFor="displayOrder">Display Order</label>
+                <label className="k-label" htmlFor="displayOrder">Ordre d’affichage</label>
                 <input
                   id="displayOrder"
                   name="displayOrder"
@@ -232,19 +232,19 @@ export default function CategoryFormPage() {
                 rows={3}
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Short description of this product collection..."
+                placeholder="Description courte de cette gamme de produits…"
                 className="k-input h-auto resize-y py-2 text-sm"
               />
             </div>
 
             <div>
-              <label className="k-label">Category Image</label>
+              <label className="k-label">Image de la catégorie</label>
               <div className="flex flex-col sm:flex-row items-start gap-4">
                 {(imagePreview || currentImage) && (
                   <div className="relative group h-24 w-24 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex-shrink-0">
                     <img
                       src={imagePreview || mediaUrl(currentImage)}
-                      alt="Category preview"
+                      alt="Aperçu de la catégorie"
                       className="h-full w-full object-cover"
                     />
                     {imagePreview && (
@@ -252,7 +252,7 @@ export default function CategoryFormPage() {
                         type="button"
                         onClick={handleRemoveImage}
                         className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700"
-                        title="Remove new image"
+                        title="Retirer la nouvelle image"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -266,9 +266,9 @@ export default function CategoryFormPage() {
                   >
                     <Upload className="h-5 w-5 text-slate-500 mb-1" />
                     <span className="text-xs font-medium text-slate-800">
-                      {imagePreview ? 'Change selected image' : 'Upload category banner'}
+                      {imagePreview ? 'Remplacer l’image sélectionnée' : 'Ajouter une bannière à la catégorie'}
                     </span>
-                    <span className="text-[11px] text-slate-400 mt-0.5">PNG, JPG, WEBP up to 5MB</span>
+                    <span className="text-[11px] text-slate-400 mt-0.5">PNG, JPG, WEBP (5 Mo maximum)</span>
                     <input
                       id="category-image"
                       type="file"
@@ -291,8 +291,8 @@ export default function CategoryFormPage() {
                   className="h-4 w-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
                 <div>
-                  <span className="text-sm font-medium text-slate-900">Active Category</span>
-                  <p className="text-xs text-slate-500">Visible to customers in catalog.</p>
+                  <span className="text-sm font-medium text-slate-900">Catégorie active</span>
+                  <p className="text-xs text-slate-500">Visible dans le catalogue public.</p>
                 </div>
               </label>
             </div>

@@ -24,8 +24,21 @@ api.interceptors.response.use(
         window.location.assign('/admin/login');
       }
     }
-    const message = error?.response?.data?.message || error.message || 'Une erreur est survenue';
-    error.uiMessage = message;
+    const messages = {
+      400: 'Les informations fournies sont invalides. Vérifiez les champs et réessayez.',
+      401: url.includes('/auth/login')
+        ? 'Adresse e-mail ou mot de passe incorrect.'
+        : 'Votre session a expiré. Veuillez vous reconnecter.',
+      403: 'Vous n’êtes pas autorisé à effectuer cette action.',
+      404: 'L’élément demandé est introuvable.',
+      409: 'Cette opération entre en conflit avec une donnée existante.',
+      413: 'Le fichier envoyé est trop volumineux.',
+      429: 'Trop de tentatives. Veuillez patienter avant de réessayer.',
+      500: 'Une erreur interne est survenue. Veuillez réessayer.',
+    };
+    error.uiMessage = status
+      ? messages[status] || 'Une erreur est survenue. Veuillez réessayer.'
+      : 'Impossible de contacter le serveur. Vérifiez votre connexion.';
     return Promise.reject(error);
   }
 );
@@ -39,5 +52,4 @@ export function getMeta(response) {
 }
 
 export default api;
-
 

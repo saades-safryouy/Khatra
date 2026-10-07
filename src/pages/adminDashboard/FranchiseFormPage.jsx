@@ -46,7 +46,7 @@ export default function FranchiseFormPage() {
         })
         .catch((err) => {
           if (!isMounted) return;
-          showToast(err?.response?.data?.message || 'Failed to load franchise concept', 'error');
+          showToast(err?.uiMessage || 'Impossible de charger le concept de franchise.', 'error');
           navigate('/admin/franchises');
         })
         .finally(() => {
@@ -88,8 +88,8 @@ export default function FranchiseFormPage() {
 
   const validate = () => {
     const errs = {};
-    if (!formData.name.trim()) errs.name = 'Concept name is required';
-    if (!formData.slug.trim()) errs.slug = 'Slug is required';
+    if (!formData.name.trim()) errs.name = 'Le nom du concept est obligatoire.';
+    if (!formData.slug.trim()) errs.slug = 'L’identifiant URL est obligatoire.';
     setErrors(errs);
     return Object.keys(errs).length === 0;
   };
@@ -97,7 +97,7 @@ export default function FranchiseFormPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
-      showToast('Please correct highlighted errors', 'error');
+      showToast('Veuillez corriger les erreurs signalées.', 'error');
       return;
     }
     setSaving(true);
@@ -114,14 +114,14 @@ export default function FranchiseFormPage() {
 
       if (id) {
         await franchiseApi.update(id, payload, imageFile);
-        showToast('Franchise concept updated successfully');
+        showToast('Concept de franchise mis à jour avec succès.');
       } else {
         await franchiseApi.create(payload, imageFile);
-        showToast('Franchise concept created successfully');
+        showToast('Concept de franchise créé avec succès.');
       }
       navigate('/admin/franchises');
     } catch (err) {
-      showToast(err?.response?.data?.message || 'Failed to save franchise concept', 'error');
+      showToast(err?.uiMessage || 'Impossible d’enregistrer le concept de franchise.', 'error');
     } finally {
       setSaving(false);
     }
@@ -150,25 +150,25 @@ export default function FranchiseFormPage() {
           </Button>
           <div>
             <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
-              <Building2 className="h-3.5 w-3.5" /> Growth / Franchises
+              <Building2 className="h-3.5 w-3.5" /> Développement / Franchises
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-950">
-              {id ? 'Edit Franchise Concept' : 'New Franchise Concept'}
+              {id ? 'Modifier le concept de franchise' : 'Nouveau concept de franchise'}
             </h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" onClick={() => navigate('/admin/franchises')} disabled={saving}>
-            Cancel
+            Annuler
           </Button>
           <Button onClick={handleSubmit} disabled={saving} className="min-w-[120px]">
             {saving ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                <Loader2 className="h-4 w-4 animate-spin" /> Enregistrement…
               </>
             ) : (
               <>
-                <Check className="h-4 w-4" /> {id ? 'Save Changes' : 'Create Concept'}
+                <Check className="h-4 w-4" /> {id ? 'Enregistrer les modifications' : 'Créer le concept'}
               </>
             )}
           </Button>
@@ -177,17 +177,17 @@ export default function FranchiseFormPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="k-card p-6">
-          <h2 className="text-base font-semibold text-slate-900 mb-1">Concept Details</h2>
-          <p className="text-xs text-slate-500 mb-5">Configure concept branding, pitch description, and contact prefill.</p>
+          <h2 className="text-base font-semibold text-slate-900 mb-1">Détails du concept</h2>
+          <p className="text-xs text-slate-500 mb-5">Définir l’identité, la présentation et le message de contact prérempli.</p>
 
           <div className="space-y-4">
             <Input
-              label="Concept Name"
+              label="Nom du concept"
               name="name"
               value={formData.name}
               onChange={handleChange}
               onBlur={() => !formData.slug && handleAutoSlug()}
-              placeholder="e.g. Khatra Coffee Shop"
+              placeholder="Ex. : Khatra Coffee Shop"
               error={errors.name}
               required
             />
@@ -195,13 +195,13 @@ export default function FranchiseFormPage() {
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="k-label mb-0" htmlFor="slug">Slug (URL key)</label>
+                  <label className="k-label mb-0" htmlFor="slug">Identifiant URL</label>
                   <button
                     type="button"
                     onClick={handleAutoSlug}
                     className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
                   >
-                    <Sparkles className="h-3 w-3" /> Auto
+                    <Sparkles className="h-3 w-3" /> Générer
                   </button>
                 </div>
                 <input
@@ -217,7 +217,7 @@ export default function FranchiseFormPage() {
               </div>
 
               <div>
-                <label className="k-label" htmlFor="displayOrder">Display Order</label>
+                <label className="k-label" htmlFor="displayOrder">Ordre d’affichage</label>
                 <input
                   id="displayOrder"
                   name="displayOrder"
@@ -231,27 +231,27 @@ export default function FranchiseFormPage() {
             </div>
 
             <div>
-              <label className="k-label" htmlFor="shortDescription">Short Pitch / Summary</label>
+              <label className="k-label" htmlFor="shortDescription">Résumé du concept</label>
               <textarea
                 id="shortDescription"
                 name="shortDescription"
                 rows={2}
                 value={formData.shortDescription}
                 onChange={handleChange}
-                placeholder="Brief value proposition shown on franchise overview cards..."
+                placeholder="Présentation courte affichée dans la liste des franchises…"
                 className="k-input h-auto resize-y py-2 text-sm"
               />
             </div>
 
             <div>
-              <label className="k-label" htmlFor="description">Detailed Description & Specifications</label>
+              <label className="k-label" htmlFor="description">Description détaillée et caractéristiques</label>
               <textarea
                 id="description"
                 name="description"
                 rows={4}
                 value={formData.description}
                 onChange={handleChange}
-                placeholder="Target surface area, key requirements, support offered by Khatra..."
+                placeholder="Surface nécessaire, prérequis et accompagnement proposé par Khatra…"
                 className="k-input h-auto resize-y py-2 text-sm"
               />
             </div>
@@ -259,7 +259,7 @@ export default function FranchiseFormPage() {
             <div>
               <label className="k-label" htmlFor="whatsappMessage">
                 <span className="inline-flex items-center gap-1.5 text-emerald-600 font-semibold">
-                  <MessageCircle className="h-4 w-4" /> WhatsApp Prefilled Message
+                  <MessageCircle className="h-4 w-4" /> Message WhatsApp prérempli
                 </span>
               </label>
               <textarea
@@ -271,17 +271,17 @@ export default function FranchiseFormPage() {
                 placeholder="Bonjour Khatra, je suis intéressé par la franchise..."
                 className="k-input h-auto resize-y py-2 text-sm"
               />
-              <p className="text-xs text-slate-500 mt-1">Automatic greeting message when prospective franchisees click WhatsApp.</p>
+              <p className="text-xs text-slate-500 mt-1">Message envoyé automatiquement lorsque les candidats contactent Khatra sur WhatsApp.</p>
             </div>
 
             <div>
-              <label className="k-label">Concept Banner Image</label>
+              <label className="k-label">Image de bannière du concept</label>
               <div className="flex flex-col sm:flex-row items-start gap-4">
                 {(imagePreview || currentImage) && (
                   <div className="relative group h-24 w-32 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 flex-shrink-0">
                     <img
                       src={imagePreview || mediaUrl(currentImage)}
-                      alt="Franchise preview"
+                      alt="Aperçu de la franchise"
                       className="h-full w-full object-cover"
                     />
                     {imagePreview && (
@@ -289,7 +289,7 @@ export default function FranchiseFormPage() {
                         type="button"
                         onClick={handleRemoveImage}
                         className="absolute top-1 right-1 bg-red-600 text-white p-1 rounded-full shadow hover:bg-red-700"
-                        title="Remove new image"
+                        title="Retirer la nouvelle image"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -303,9 +303,9 @@ export default function FranchiseFormPage() {
                   >
                     <Upload className="h-5 w-5 text-slate-500 mb-1" />
                     <span className="text-xs font-medium text-slate-800">
-                      {imagePreview ? 'Change banner image' : 'Upload concept banner'}
+                      {imagePreview ? 'Remplacer la bannière' : 'Ajouter une bannière'}
                     </span>
-                    <span className="text-[11px] text-slate-400 mt-0.5">PNG, JPG, WEBP up to 5MB</span>
+                    <span className="text-[11px] text-slate-400 mt-0.5">PNG, JPG, WEBP (5 Mo maximum)</span>
                     <input
                       id="franchise-image"
                       type="file"
@@ -328,8 +328,8 @@ export default function FranchiseFormPage() {
                   className="h-4 w-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
                 <div>
-                  <span className="text-sm font-medium text-slate-900">Active Franchise Concept</span>
-                  <p className="text-xs text-slate-500">Visible on public franchise and partnership pages.</p>
+                  <span className="text-sm font-medium text-slate-900">Concept de franchise actif</span>
+                  <p className="text-xs text-slate-500">Visible sur les pages publiques dédiées aux franchises et aux partenariats.</p>
                 </div>
               </label>
             </div>

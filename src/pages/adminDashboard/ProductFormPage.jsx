@@ -7,6 +7,18 @@ import { categoryApi } from '../../services/categoryApi';
 import { useToast, Button, Input, Skeleton } from '../../components/ui';
 import { mediaUrl, slugify } from '../../lib/utils';
 
+function toDatetimeLocal(value) {
+  if (!value) return '';
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) return '';
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 16);
+}
+
+function formatMad(value) {
+  return `${new Intl.NumberFormat('fr-MA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} MAD`;
+}
+
 export default function ProductFormPage() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -27,6 +39,9 @@ export default function ProductFormPage() {
     description: '',
     reference: '',
     price: '',
+    promoEnabled: false,
+    promo: '',
+    promoExpiresAt: '',
     status: 'ACTIVE',
     featured: false,
   });
@@ -52,6 +67,9 @@ export default function ProductFormPage() {
             description: product.description || '',
             reference: product.reference || '',
             price: product.price !== null && product.price !== undefined ? String(product.price) : '',
+            promoEnabled: product.promo !== null && product.promo !== undefined,
+            promo: product.promo !== null && product.promo !== undefined ? String(product.promo) : '',
+            promoExpiresAt: toDatetimeLocal(product.promoExpiresAt || product.promo_expires_at),
             status: product.status || 'ACTIVE',
             featured: Boolean(product.featured),
           });
@@ -59,7 +77,7 @@ export default function ProductFormPage() {
         }
       } catch (err) {
         if (!isMounted) return;
-        showToast(err?.response?.data?.message || 'Failed to load product data', 'error');
+        showToast(err?.uiMessage || 'Impossible de charger les données du produit.', 'error');
         navigate('/admin/products');
       } finally {
         if (isMounted) setLoading(false);
@@ -108,13 +126,22 @@ export default function ProductFormPage() {
 
   const validate = () => {
     const errs = {};
-    if (!formData.name.trim()) errs.name = 'Product name is required';
-    if (!formData.slug.trim()) errs.slug = 'Slug is required';
-    if (!formData.categoryId) errs.categoryId = 'Please select a category';
+    if (!formData.name.trim()) errs.name = 'Le nom du produit est obligatoire.';
+    if (!formData.slug.trim()) errs.slug = 'Le slug est obligatoire.';
+    if (!formData.categoryId) errs.categoryId = 'Veuillez sélectionner une catégorie.';
     if (formData.price !== '') {
       const priceNum = Number(formData.price);
       if (Number.isNaN(priceNum) || priceNum < 0) {
-        errs.price = 'Price must be a valid non-negative number';
+        errs.price = 'Le prix doit être un nombre positif ou nul.';
+      }
+    }
+    if (formData.promoEnabled) {
+      const promo = Number(formData.promo);
+      if (formData.promo === '' || !Number.isFinite(promo) || promo < 0 || promo >= 100) {
+        errs.promo = 'Le pourcentage doit être compris entre 0 et 99,99.';
+      }
+      if (!formData.promoExpiresAt || !Number.isFinite(new Date(formData.promoExpiresAt).getTime())) {
+        errs.promoExpiresAt = 'Une date et une heure d’expiration valides sont requises.';
       }
     }
     setErrors(errs);
@@ -124,7 +151,7 @@ export default function ProductFormPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) {
-      showToast('Please correct the highlighted errors', 'error');
+      showToast('Veuillez corriger les erreurs signalées.', 'error');
       return;
     }
     setSaving(true);
@@ -137,19 +164,21 @@ export default function ProductFormPage() {
         description: formData.description.trim() || undefined,
         reference: formData.reference.trim() || undefined,
         price: formData.price !== '' ? Number(formData.price) : '',
+        promo: formData.promoEnabled ? Number(formData.promo) : '',
+        promoExpiresAt: formData.promoEnabled ? new Date(formData.promoExpiresAt).toISOString() : '',
         status: formData.status,
         featured: formData.featured,
       };
       if (id) {
         await productApi.update(id, payload, newImageFiles);
-        showToast('Product updated successfully');
+        showToast('Produit mis à jour avec succès.');
       } else {
         await productApi.create(payload, newImageFiles);
-        showToast('Product created successfully');
+        showToast('Produit créé avec succès.');
       }
       navigate('/admin/products');
     } catch (err) {
-      showToast(err?.response?.data?.message || 'Failed to save product', 'error');
+      showToast(err?.uiMessage || 'Impossible d’enregistrer le produit.', 'error');
     } finally {
       setSaving(false);
     }
@@ -174,29 +203,29 @@ export default function ProductFormPage() {
             onClick={() => navigate('/admin/products')}
             className="rounded-lg border border-slate-200 bg-white shadow-sm"
           >
-            <ArrowLeft className="h-4 w-4" />
+            <ArrowLeft className="h-4 w-4" aria-label="Retour" />
           </Button>
           <div>
             <div className="flex items-center gap-2 text-xs font-medium text-slate-500 uppercase tracking-wider">
-              <Package className="h-3.5 w-3.5" /> Catalog / Products
+              <Package className="h-3.5 w-3.5" /> Catalogue / Produits
             </div>
             <h1 className="text-2xl font-semibold tracking-tight text-slate-950">
-              {id ? 'Edit Product' : 'New Product'}
+              {id ? 'Modifier le produit' : 'Nouveau produit'}
             </h1>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" onClick={() => navigate('/admin/products')} disabled={saving}>
-            Cancel
+            Annuler
           </Button>
           <Button onClick={handleSubmit} disabled={saving} className="min-w-[120px]">
             {saving ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin" /> Saving...
+                <Loader2 className="h-4 w-4 animate-spin" /> Enregistrement…
               </>
             ) : (
               <>
-                <Check className="h-4 w-4" /> {id ? 'Save Changes' : 'Create Product'}
+                <Check className="h-4 w-4" /> {id ? 'Enregistrer les modifications' : 'Créer le produit'}
               </>
             )}
           </Button>
@@ -206,29 +235,29 @@ export default function ProductFormPage() {
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <div className="k-card p-6">
-            <h2 className="text-base font-semibold text-slate-900 mb-1">General Information</h2>
-            <p className="text-xs text-slate-500 mb-5">Basic title, identification, category, and pricing.</p>
+            <h2 className="text-base font-semibold text-slate-900 mb-1">Informations générales</h2>
+            <p className="text-xs text-slate-500 mb-5">Nom, identifiant, catégorie et prix du produit.</p>
             <div className="space-y-4">
               <Input
-                label="Product Name"
+                label="Nom du produit"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 onBlur={() => !formData.slug && handleAutoSlug()}
-                placeholder="e.g. Grain de Café Khatra Signature"
+                placeholder="Ex. : Café Khatra Signature"
                 error={errors.name}
                 required
               />
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
                   <div className="flex items-center justify-between mb-1">
-                    <label className="k-label mb-0" htmlFor="slug">Slug (URL key)</label>
+                    <label className="k-label mb-0" htmlFor="slug">Identifiant URL</label>
                     <button
                       type="button"
                       onClick={handleAutoSlug}
                       className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700"
                     >
-                      <Sparkles className="h-3 w-3" /> Auto
+                      <Sparkles className="h-3 w-3" /> Générer
                     </button>
                   </div>
                   <input
@@ -243,7 +272,7 @@ export default function ProductFormPage() {
                   {errors.slug && <p className="text-xs text-red-600 mt-1">{errors.slug}</p>}
                 </div>
                 <div>
-                  <label className="k-label" htmlFor="categoryId">Category</label>
+                  <label className="k-label" htmlFor="categoryId">Catégorie</label>
                   <select
                     id="categoryId"
                     name="categoryId"
@@ -252,7 +281,7 @@ export default function ProductFormPage() {
                     className="k-input bg-white"
                     required
                   >
-                    <option value="">Select a category</option>
+                    <option value="">Sélectionner une catégorie</option>
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
@@ -262,7 +291,7 @@ export default function ProductFormPage() {
               </div>
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
-                  <label className="k-label" htmlFor="price">Price (MAD)</label>
+                  <label className="k-label" htmlFor="price">Prix (MAD)</label>
                   <div className="relative">
                     <input
                       id="price"
@@ -280,15 +309,15 @@ export default function ProductFormPage() {
                     </div>
                   </div>
                   {errors.price && <p className="text-xs text-red-600 mt-1">{errors.price}</p>}
-                  <p className="text-xs text-slate-500 mt-1">Leave empty if price is upon request.</p>
+                  <p className="text-xs text-slate-500 mt-1">Laisser vide si le prix est communiqué sur demande.</p>
                 </div>
                 <div>
                   <Input
-                    label="Reference / SKU"
+                    label="Référence / SKU"
                     name="reference"
                     value={formData.reference}
                     onChange={handleChange}
-                    placeholder="e.g. KHT-COF-001"
+                    placeholder="Ex. : KHT-COF-001"
                   />
                 </div>
               </div>
@@ -297,29 +326,29 @@ export default function ProductFormPage() {
 
           <div className="k-card p-6">
             <h2 className="text-base font-semibold text-slate-900 mb-1">Descriptions</h2>
-            <p className="text-xs text-slate-500 mb-5">Short summary and detailed descriptions.</p>
+            <p className="text-xs text-slate-500 mb-5">Résumé et présentation détaillée du produit.</p>
             <div className="space-y-4">
               <div>
-                <label className="k-label" htmlFor="shortDescription">Short Description</label>
+                <label className="k-label" htmlFor="shortDescription">Description courte</label>
                 <textarea
                   id="shortDescription"
                   name="shortDescription"
                   rows={2}
                   value={formData.shortDescription}
                   onChange={handleChange}
-                  placeholder="Brief summary displayed on listings..."
+                  placeholder="Résumé affiché dans les listes de produits…"
                   className="k-input h-auto resize-y py-2 text-sm"
                 />
               </div>
               <div>
-                <label className="k-label" htmlFor="description">Full Description</label>
+                <label className="k-label" htmlFor="description">Description complète</label>
                 <textarea
                   id="description"
                   name="description"
                   rows={5}
                   value={formData.description}
                   onChange={handleChange}
-                  placeholder="Detailed specifications, notes..."
+                  placeholder="Caractéristiques détaillées et remarques…"
                   className="k-input h-auto resize-y py-2 text-sm"
                 />
               </div>
@@ -328,11 +357,70 @@ export default function ProductFormPage() {
         </div>
         <div className="space-y-6">
           <div className="k-card p-6">
-            <h2 className="text-base font-semibold text-slate-900 mb-1">Status & Visibility</h2>
-            <p className="text-xs text-slate-500 mb-5">Control product availability.</p>
+            <h2 className="text-base font-semibold text-slate-900 mb-1">Promotion</h2>
+            <p className="text-xs text-slate-500 mb-5">Le prix d’origine du produit reste inchangé.</p>
+            <label className="flex items-start gap-3 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                name="promoEnabled"
+                checked={formData.promoEnabled}
+                onChange={handleChange}
+                className="h-4 w-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+              />
+              <span className="text-sm font-medium text-slate-900">Activer la promotion</span>
+            </label>
+            {formData.promoEnabled && (
+              <div className="mt-4 space-y-4">
+                <div>
+                  <label className="k-label" htmlFor="promo">Pourcentage de réduction</label>
+                  <div className="relative">
+                    <input
+                      id="promo"
+                      name="promo"
+                      type="number"
+                      min="0"
+                      max="99.99"
+                      step="0.01"
+                      value={formData.promo}
+                      onChange={handleChange}
+                      className="k-input pr-10"
+                      required
+                    />
+                    <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-sm text-slate-500">%</span>
+                  </div>
+                  {errors.promo && <p className="text-xs text-red-600 mt-1">{errors.promo}</p>}
+                </div>
+                <div>
+                  <label className="k-label" htmlFor="promoExpiresAt">Date d’expiration</label>
+                  <input
+                    id="promoExpiresAt"
+                    name="promoExpiresAt"
+                    type="datetime-local"
+                    value={formData.promoExpiresAt}
+                    onChange={handleChange}
+                    className="k-input"
+                    required
+                  />
+                  {errors.promoExpiresAt && <p className="text-xs text-red-600 mt-1">{errors.promoExpiresAt}</p>}
+                </div>
+                {formData.price !== '' && Number.isFinite(Number(formData.price))
+                  && Number(formData.promo) >= 0 && Number(formData.promo) < 100 && (
+                    <div className="rounded-lg bg-slate-50 p-3 text-sm">
+                      <p>Prix normal : <span className="font-medium">{formatMad(Number(formData.price))}</span></p>
+                      <p>Promotion : <span className="font-medium">-{Number(formData.promo) || 0}%</span></p>
+                      <p>Prix promotionnel : <span className="font-semibold text-emerald-700">{formatMad(Number(formData.price) * (1 - (Number(formData.promo) || 0) / 100))}</span></p>
+                      <p className="mt-1 text-xs text-slate-500">Expire le : {formData.promoExpiresAt ? new Date(formData.promoExpiresAt).toLocaleString('fr-FR') : '—'}</p>
+                    </div>
+                  )}
+              </div>
+            )}
+          </div>
+          <div className="k-card p-6">
+            <h2 className="text-base font-semibold text-slate-900 mb-1">Statut et visibilité</h2>
+            <p className="text-xs text-slate-500 mb-5">Gérer la disponibilité du produit.</p>
             <div className="space-y-4">
               <div>
-                <label className="k-label" htmlFor="status">Publication Status</label>
+                <label className="k-label" htmlFor="status">Statut de publication</label>
                 <select
                   id="status"
                   name="status"
@@ -340,8 +428,8 @@ export default function ProductFormPage() {
                   onChange={handleChange}
                   className="k-input bg-white"
                 >
-                  <option value="ACTIVE">ACTIVE (Published)</option>
-                  <option value="INACTIVE">INACTIVE (Hidden)</option>
+                  <option value="ACTIVE">ACTIF (Publié)</option>
+                  <option value="INACTIVE">INACTIF (Masqué)</option>
                 </select>
               </div>
               <div className="pt-2">
@@ -354,8 +442,8 @@ export default function ProductFormPage() {
                     className="h-4 w-4 mt-0.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                   />
                   <div>
-                    <span className="text-sm font-medium text-slate-900">Featured Product</span>
-                    <p className="text-xs text-slate-500">Highlight this product on homepage showcases.</p>
+                    <span className="text-sm font-medium text-slate-900">Produit à la une</span>
+                    <p className="text-xs text-slate-500">Mettre ce produit en avant sur la page d’accueil.</p>
                   </div>
                 </label>
               </div>
@@ -363,19 +451,19 @@ export default function ProductFormPage() {
           </div>
 
           <div className="k-card p-6">
-            <h2 className="text-base font-semibold text-slate-900 mb-1">Product Images</h2>
-            <p className="text-xs text-slate-500 mb-4">Upload product imagery.</p>
+            <h2 className="text-base font-semibold text-slate-900 mb-1">Images du produit</h2>
+            <p className="text-xs text-slate-500 mb-4">Ajouter des images au produit.</p>
             {existingImages.length > 0 && (
               <div className="mb-4 space-y-2">
                 <span className="text-xs font-semibold text-slate-700 uppercase tracking-wider">
-                  Current Images ({existingImages.length})
+                  Images actuelles ({existingImages.length})
                 </span>
                 <div className="grid grid-cols-3 gap-2">
                   {existingImages.map((img, i) => (
                     <div key={img.id || i} className="relative group aspect-square rounded-lg border border-slate-200 overflow-hidden bg-slate-50">
                       <img src={mediaUrl(img.imageUrl)} alt={img.altText || ''} className="h-full w-full object-cover" />
                       {i === 0 && (
-                        <span className="absolute bottom-1 left-1 bg-slate-900/80 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">Cover</span>
+                        <span className="absolute bottom-1 left-1 bg-slate-900/80 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">Image principale</span>
                       )}
                     </div>
                   ))}
@@ -387,14 +475,14 @@ export default function ProductFormPage() {
                 <div className="grid h-10 w-10 place-items-center rounded-full bg-slate-100 text-slate-600 mb-2">
                   <Upload className="h-5 w-5" />
                 </div>
-                <p className="text-sm font-medium text-slate-800">Click to upload images</p>
+                <p className="text-sm font-medium text-slate-800">Cliquer pour ajouter des images</p>
                 <p className="text-xs text-slate-500 mt-1">PNG, JPG, WEBP</p>
                 <input id="images-upload" type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
               </label>
             </div>
             {imagePreviews.length > 0 && (
               <div className="mt-4 space-y-2">
-                <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">New Uploads ({imagePreviews.length})</span>
+                <span className="text-xs font-semibold text-blue-600 uppercase tracking-wider">Nouveaux fichiers ({imagePreviews.length})</span>
                 <div className="space-y-2">
                   {imagePreviews.map((prev, idx) => (
                     <div key={idx} className="flex items-center justify-between p-2 rounded-lg border border-slate-200 bg-slate-50 text-xs">
