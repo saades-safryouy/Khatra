@@ -6,7 +6,7 @@ export function LanguageSwitcher({ light = false }) {
   const { lang, setLang, loading } = useLang();
 
   return (
-    <div className={`lang-switch${light ? ' lang-switch--light' : ''}`} role="group" aria-label="Language" dir="ltr">
+    <div className={`lang-switch${light ? ' lang-switch--light' : ''}`} role="group" aria-label={lang === 'ar' ? 'اختيار اللغة' : 'Choisir la langue'} dir="ltr">
       <motion.span
         className="lang-switch__thumb"
         animate={{ x: lang === 'ar' ? '100%' : '0%' }}

@@ -94,9 +94,11 @@ export default function CartPage() {
   const [whatsappUrl, setWhatsappUrl] = useState('');
   const [emailSent, setEmailSent] = useState(false);
   const [quoteState, setQuoteState] = useState({ signature: '', error: '' });
+  const [quoteRefresh, setQuoteRefresh] = useState(0);
   const cartSignature = JSON.stringify(items.map(({ id, quantity }) => ({ productId: id, quantity })));
-  const quoteLoading = items.length > 0 && quoteState.signature !== cartSignature;
-  const quoteError = items.length > 0 && quoteState.signature === cartSignature ? quoteState.error : '';
+  const quoteRequestKey = `${cartSignature}:${lang}:${quoteRefresh}`;
+  const quoteLoading = items.length > 0 && quoteState.signature !== quoteRequestKey;
+  const quoteError = items.length > 0 && quoteState.signature === quoteRequestKey ? quoteState.error : '';
 
   useEffect(() => {
     const requestedItems = JSON.parse(cartSignature);
@@ -106,13 +108,25 @@ export default function CartPage() {
       .then((quote) => {
         if (!active) return;
         syncProducts(quote.items || []);
-        setQuoteState({ signature: cartSignature, error: '' });
+        setQuoteState({ signature: quoteRequestKey, error: '' });
       })
       .catch((error) => {
-        if (active) setQuoteState({ signature: cartSignature, error: error.message || text.error });
+        if (active) setQuoteState({ signature: quoteRequestKey, error: error.message || text.error });
       });
     return () => { active = false; };
-  }, [cartSignature, items.length, lang, syncProducts, text.error]);
+  }, [cartSignature, items.length, lang, quoteRequestKey, syncProducts, text.error]);
+
+  useEffect(() => {
+    if (!items.length) return undefined;
+    const now = Date.now();
+    const expiries = items
+      .filter((item) => item.promo !== null && item.promo !== undefined)
+      .map((item) => new Date(item.promoExpiresAt).getTime())
+      .filter((time) => Number.isFinite(time) && time > now);
+    const nextExpiry = expiries.length ? Math.min(...expiries) - now : 60_000;
+    const timer = window.setTimeout(() => setQuoteRefresh((value) => value + 1), Math.max(0, Math.min(nextExpiry, 60_000)));
+    return () => window.clearTimeout(timer);
+  }, [items]);
 
   const submit = async (channel, event) => {
     event.preventDefault();
@@ -176,7 +190,14 @@ export default function CartPage() {
                     {item.image && <img src={item.image} alt="" />}
                     <strong>{item.name}</strong>
                   </div>
-                  <span className="cart-unit-price" data-label={text.unitPrice}>{formatMoney(item.price, lang)}</span>
+                  <span className="cart-unit-price" data-label={text.unitPrice}>
+                    {item.promo !== null && item.promo !== undefined && new Date(item.promoExpiresAt).getTime() > Date.now() && (
+                      <del>{formatMoney(item.originalPrice, lang)}</del>
+                    )}
+                    <strong>{formatMoney(item.price, lang)}</strong>
+                    {item.promo !== null && item.promo !== undefined && new Date(item.promoExpiresAt).getTime() > Date.now()
+                      && <span className="product-promo-badge">-{item.promo}%</span>}
+                  </span>
                   <div className="cart-quantity" data-label={text.quantity}>
                     <button type="button" onClick={() => setQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} aria-label={lang === 'ar' ? 'تقليل الكمية' : 'Diminuer la quantité'}>−</button>
                     <input

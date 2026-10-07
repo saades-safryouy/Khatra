@@ -17,6 +17,11 @@ function readCart() {
       name: item.name,
       image: typeof item.image === 'string' ? item.image : '',
       price: Number(item.price),
+      originalPrice: item.originalPrice !== null && item.originalPrice !== undefined && Number.isFinite(Number(item.originalPrice))
+        ? Number(item.originalPrice)
+        : Number(item.price),
+      promo: item.promo !== null && item.promo !== undefined && Number.isFinite(Number(item.promo)) ? Number(item.promo) : null,
+      promoExpiresAt: typeof item.promoExpiresAt === 'string' ? item.promoExpiresAt : null,
       quantity: Number(item.quantity),
     }));
   } catch (error) {
@@ -39,21 +44,38 @@ export function CartProvider({ children }) {
   const addProduct = useCallback((product) => {
     if (product?.price === null || product?.price === undefined || product?.price === '') return false;
     const price = Number(product?.price);
-    if (!product || product.id === undefined || !Number.isFinite(price) || price < 0) return false;
+    const effectivePrice = Number(product?.effectivePrice);
+    const expiration = product?.promoExpiresAt ? new Date(product.promoExpiresAt).getTime() : 0;
+    const promoActive = product?.promoActive === true && Number(product?.promo) > 0
+      && Number(product?.promo) < 100 && expiration > Date.now();
+    const currentPrice = promoActive && Number.isFinite(effectivePrice) ? effectivePrice : price;
+    if (!product || product.id === undefined || !Number.isFinite(price) || price < 0 || !Number.isFinite(currentPrice) || currentPrice < 0) return false;
     const existing = items.find((item) => String(item.id) === String(product.id));
     if (existing && existing.quantity >= 10000) return false;
     setItems((current) => {
       const existing = current.find((item) => String(item.id) === String(product.id));
       if (existing) {
         return current.map((item) => String(item.id) === String(product.id)
-          ? { ...item, name: product.name, image: product.img || item.image, price, quantity: item.quantity + 1 }
+          ? {
+            ...item,
+            name: product.name,
+            image: product.img || item.image,
+            price: currentPrice,
+            originalPrice: price,
+            promo: promoActive ? Number(product.promo) : null,
+            promoExpiresAt: promoActive ? product.promoExpiresAt : null,
+            quantity: item.quantity + 1,
+          }
           : item);
       }
       return [...current, {
         id: product.id,
         name: product.name,
         image: product.img || '',
-        price,
+        price: currentPrice,
+        originalPrice: price,
+        promo: promoActive ? Number(product.promo) : null,
+        promoExpiresAt: promoActive ? product.promoExpiresAt : null,
         quantity: 1,
       }];
     });
@@ -85,8 +107,13 @@ export function CartProvider({ children }) {
           name: product.productName,
           image: product.productImage ? resolveImageUrl(product.productImage) : item.image,
           price: Number(product.unitPrice),
+          originalPrice: Number(product.originalPrice),
+          promo: product.promo,
+          promoExpiresAt: product.promoExpiresAt,
         };
-        if (updated.name === item.name && updated.image === item.image && updated.price === item.price) return item;
+        if (updated.name === item.name && updated.image === item.image && updated.price === item.price
+          && updated.originalPrice === item.originalPrice && updated.promo === item.promo
+          && updated.promoExpiresAt === item.promoExpiresAt) return item;
         changed = true;
         return updated;
       });

@@ -15,7 +15,7 @@ const PRODUCTS_PER_PAGE = 12;
 
 export function ProductsPage() {
   const { products, categories: backendCategories, categoriesRaw, settings, loading, error, refreshData } = useData();
-  const { t } = useLang();
+  const { t, lang } = useLang();
   const [activeCategory, setActiveCategory] = useState('Tout');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -102,7 +102,10 @@ export function ProductsPage() {
   const resultCount = pageData ? pageData.meta.total : fallbackFiltered.length;
 
   const waNum = settings?.whatsapp || '212661000000';
-  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent("Bonjour Khatra, je souhaite recevoir le catalogue tarifaire professionnel B2B.")}`;
+  const waMessage = lang === 'ar'
+    ? 'مرحباً خاترة، أود الحصول على قائمة أسعار منتجات الأعمال.'
+    : 'Bonjour Khatra, je souhaite recevoir le catalogue tarifaire professionnel B2B.';
+  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waMessage)}`;
 
   const changeCategory = (category) => {
     setActiveCategory(category);
@@ -199,9 +202,9 @@ export function ProductsPage() {
           </div>
         )}
         {(loading && products.length === 0) || (pageLoading && !pageData && products.length === 0) ? (
-          <div className="products-state" role="status" aria-live="polite">Chargement du catalogue…</div>
+          <div className="products-state" role="status" aria-live="polite">{t('Chargement du catalogue…')}</div>
         ) : pageLoading && !pageData ? (
-          <div className="products-state" role="status" aria-live="polite">Mise à jour des produits…</div>
+          <div className="products-state" role="status" aria-live="polite">{t('Mise à jour des produits…')}</div>
         ) : visibleProducts.length > 0 ? (
           <>
           <div className="products-grid">

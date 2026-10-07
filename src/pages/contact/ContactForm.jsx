@@ -1,18 +1,23 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useData } from '../../context/DataContext';
+import { useLang } from '../../context/LanguageContext';
 import { Check, ArrowRight } from '../../components/Icons';
 
 export function ContactForm() {
   const [searchParams] = useSearchParams();
+  const { lang } = useLang();
+  const productParam = searchParams.get('product');
+  const [messageEdited, setMessageEdited] = useState(false);
 
   const [form, setForm] = useState(() => {
-    const prodParam = searchParams.get('product');
     const subjParam = searchParams.get('subject');
-    if (prodParam) {
+    if (productParam) {
       return {
         name: '', company: '', email: '', phone: '', subject: 'Produits B2B',
-        message: `Bonjour, je souhaite obtenir un devis professionnel pour le produit : ${prodParam}.`
+        message: lang === 'ar'
+          ? `مرحباً، أود الحصول على عرض أسعار مهني للمنتج: ${productParam}.`
+          : `Bonjour, je souhaite obtenir un devis professionnel pour le produit : ${productParam}.`
       };
     }
     if (subjParam) {
@@ -20,6 +25,14 @@ export function ContactForm() {
     }
     return { name: '', company: '', email: '', phone: '', subject: 'Produits B2B', message: '' };
   });
+
+  useEffect(() => {
+    if (!productParam || messageEdited) return;
+    const message = lang === 'ar'
+      ? `مرحباً، أود الحصول على عرض أسعار مهني للمنتج: ${productParam}.`
+      : `Bonjour, je souhaite obtenir un devis professionnel pour le produit : ${productParam}.`;
+    setForm((current) => ({ ...current, message }));
+  }, [lang, messageEdited, productParam]);
 
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -73,7 +86,7 @@ export function ContactForm() {
         </p>
         <button
           type="button"
-          onClick={() => { setSubmitted(false); setForm({ name: '', company: '', email: '', phone: '', subject: 'Produits B2B', message: '' }); }}
+          onClick={() => { setSubmitted(false); setMessageEdited(false); setForm({ name: '', company: '', email: '', phone: '', subject: 'Produits B2B', message: '' }); }}
           className="btn btn-outline-dark btn-sm"
         >
           Envoyer un autre message
@@ -152,7 +165,7 @@ export function ContactForm() {
             required
             placeholder="Précisez votre ville, vos besoins ou les détails de votre projet..."
             value={form.message}
-            onChange={e => setForm({ ...form, message: e.target.value })}
+            onChange={e => { setMessageEdited(true); setForm({ ...form, message: e.target.value }); }}
           />
         </div>
 

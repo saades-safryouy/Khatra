@@ -125,7 +125,7 @@ export function LocationsPage() {
                 style={isNearest ? { border: '2px solid var(--caramel)', position: 'relative' } : undefined}
               >
                 <div className="location-card-img" style={{ position: 'relative' }}>
-                  <img src={store.img} alt={store.name} loading="lazy" />
+                  <img src={store.img} alt={store.name} data-no-translate loading="lazy" />
                   {isNearest && (
                     <span style={{
                       position: 'absolute',
@@ -163,7 +163,7 @@ export function LocationsPage() {
                       </span>
                     )}
                   </div>
-                  <h3>{t(store.name)}</h3>
+                  <h3 data-no-translate>{store.name}</h3>
                   <p style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', color: 'var(--dark-s)', fontSize: '0.88rem' }}>
                     <span style={{ color: 'var(--toffee)', flexShrink: 0, marginTop: '2px' }}><MapPin s={16} /></span>
                     <span>{store.address}</span>

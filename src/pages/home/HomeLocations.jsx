@@ -44,13 +44,13 @@ export function HomeLocations() {
               transition={{ duration: 0.75, ease: EASE, delay: 0.08 + idx * 0.12 }}
             >
               <div className="location-editorial-card__img-box">
-                <img src={store.img} alt={store.name} loading="lazy" />
+                <img src={store.img} alt={store.name} data-no-translate loading="lazy" />
                 <span className="location-editorial-card__city-tag">{t(store.city)}</span>
               </div>
 
               <div className="location-editorial-card__body">
                 <div className="location-editorial-card__top">
-                  <h3>{t(store.name)}</h3>
+                  <h3 data-no-translate>{store.name}</h3>
                 </div>
                 <p className="location-editorial-card__addr">
                   <MapPin s={14} />

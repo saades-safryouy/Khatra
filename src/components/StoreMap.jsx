@@ -129,8 +129,8 @@ export function StoreMap({ stores = [], userCoords = null, height = '450px', sel
                 <span className="eyebrow" style={{ color: 'var(--bordeaux)', fontSize: '0.62rem', marginBottom: '4px', display: 'block' }}>
                   {t(store.city)} · {store.type}
                 </span>
-                <h4 style={{ margin: '0 0 6px', fontSize: '1rem', color: 'var(--dark)' }}>
-                  {t(store.name)}
+                <h4 data-no-translate style={{ margin: '0 0 6px', fontSize: '1rem', color: 'var(--dark)' }}>
+                  {store.name}
                 </h4>
                 <p style={{ margin: '0 0 8px', fontSize: '0.82rem', color: 'var(--dark-s)', lineHeight: 1.4 }}>
                   {store.address}

@@ -370,7 +370,7 @@ p {
   box-shadow: 0 4px 24px rgba(42, 30, 23, 0.05);
 }
 html[data-theme="dark"] .site-navbar--scrolled {
-  background: rgba(25, 18, 14, 0.94);
+  background: rgba(21, 21, 21, 0.94);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
 }
@@ -2222,6 +2222,35 @@ html[data-theme="dark"] .product-card:hover .product-card-body h3 { color: var(-
   font-weight: 700;
   font-size: 0.95rem;
 }
+.product-card-price.is-promotional {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px 9px;
+}
+.product-card-price del,
+.product-detail-price del,
+.cart-unit-price del {
+  color: var(--text-muted);
+  font-family: var(--font-sans);
+  font-size: 0.82em;
+  font-weight: 400;
+}
+.product-card-price strong,
+.product-detail-price strong { font: inherit; }
+.product-promo-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  background: var(--bordeaux);
+  color: #fff;
+  padding: 3px 8px;
+  font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.2;
+  white-space: nowrap;
+}
 .product-card-add {
   width: calc(100% - 44px);
   margin: 0 22px 20px;
@@ -2327,6 +2356,12 @@ html[data-theme="dark"] .product-card-cta { color: var(--caramel-l); }
   font-size: clamp(1.7rem, 3vw, 2.3rem);
   font-weight: 600;
   line-height: 1.1;
+}
+.product-detail-price.is-promotional {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 8px 12px;
 }
 .product-detail-price.is-on-request { color: var(--text-muted); font-family: var(--font-sans); font-size: 1rem; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
 html[data-theme="dark"] .product-detail-price:not(.is-on-request) { color: var(--caramel-l); }
@@ -3966,7 +4001,8 @@ html[dir="rtl"] .pagination__control svg {
   background: var(--linen-light);
 }
 .cart-product strong { overflow-wrap: anywhere; font-size: 0.88rem; }
-.cart-unit-price { color: var(--text-soft); font-size: 0.82rem; }
+.cart-unit-price { color: var(--text-soft); font-size: 0.82rem; display: flex; align-items: center; flex-wrap: wrap; gap: 5px 8px; }
+.cart-unit-price strong { color: var(--bordeaux); font-weight: 700; }
 .cart-line-total { color: var(--bordeaux); font-size: 0.85rem; }
 .cart-quantity { display: flex; align-items: center; }
 .cart-quantity button {

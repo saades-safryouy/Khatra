@@ -9,6 +9,7 @@ import { ArrowLeft, Check, WhatsApp, ArrowRight } from '../components/Icons';
 import ProductCard from '../components/ProductCard';
 import SEO from '../components/SEO';
 import { useCart } from '../context/cartStore';
+import { useActivePromotion } from '../hooks/useActivePromotion';
 
 export function ProductDetailPage() {
   const { slug } = useParams();
@@ -25,6 +26,7 @@ export function ProductDetailPage() {
   const fetchError = lookupMatchesSlug ? lookupResult.error : null;
   const loadingDirect = !matchedProduct && Boolean(slug) && !lookupMatchesSlug;
   const product = matchedProduct || fetchedProduct;
+  const promoActive = useActivePromotion(product);
 
   // FIX: the same component instance is reused when you open a related product,
   // so the previously selected thumbnail used to "stick" on the next product.
@@ -100,15 +102,18 @@ export function ProductDetailPage() {
     .slice(0, 3);
 
   const hasPrice = product.price !== null && product.price !== undefined;
+  const formatProductPrice = (value) => new Intl.NumberFormat(lang === 'ar' ? 'ar-MA' : 'fr-MA', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(value);
   const priceLabel = hasPrice
-    ? `${new Intl.NumberFormat(lang === 'ar' ? 'ar-MA' : 'fr-MA', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(product.price)} MAD`
+    ? `${formatProductPrice(promoActive ? product.effectivePrice : product.price)} MAD`
     : t('Prix sur demande');
 
   const waNum = settings?.whatsapp || '212661000000';
-  const waMsg = `Bonjour Khatra, je souhaite obtenir des informations professionnelles et tarifs pour le produit : ${product.name}.`;
+  const waMsg = lang === 'ar'
+    ? `مرحباً خاترة، أود الحصول على معلومات مهنية وأسعار المنتج: ${product.name}.`
+    : `Bonjour Khatra, je souhaite obtenir des informations professionnelles et tarifs pour le produit : ${product.name}.`;
   const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waMsg)}`;
   const quoteUrl = `/contact?product=${encodeURIComponent(product.name)}`;
   const currentImage = selectedImg || product.img;
@@ -132,7 +137,7 @@ export function ProductDetailPage() {
               </Link>
             </li>
             {product.category && <li>{product.category}</li>}
-            <li aria-current="page">{product.name}</li>
+            <li aria-current="page" data-no-translate>{product.name}</li>
           </ol>
         </nav>
       </div>
@@ -145,7 +150,7 @@ export function ProductDetailPage() {
           transition={{ duration: 0.55 }}
         >
           <div className="product-detail-image-frame" onMouseMove={handleZoomMove}>
-            <img key={currentImage} src={currentImage} alt={product.name} />
+            <img key={currentImage} src={currentImage} alt={product.name} data-no-translate />
           </div>
           {product.images && product.images.length > 1 && (
             <div className="product-detail-gallery" aria-label={t('Images du produit')}>
@@ -174,9 +179,13 @@ export function ProductDetailPage() {
           <span className="eyebrow">
             {product.category} · {t('Gamme Professionnelle')}
           </span>
-          <h1>{product.name}</h1>
+          <h1 data-no-translate>{product.name}</h1>
 
-          <p className={`product-detail-price${hasPrice ? '' : ' is-on-request'}`}>{priceLabel}</p>
+          <p className={`product-detail-price${hasPrice ? '' : ' is-on-request'}${promoActive ? ' is-promotional' : ''}`}>
+            {promoActive && <del>{formatProductPrice(product.price)} MAD</del>}
+            <strong>{priceLabel}</strong>
+            {promoActive && <span className="product-promo-badge">-{product.promo}%</span>}
+          </p>
 
           <p className="product-detail-description">{product.desc || product.short}</p>
 
@@ -258,7 +267,7 @@ export function ProductDetailPage() {
       {/* mobile sticky action bar */}
       <div className="product-mobile-bar">
         <div className="product-mobile-bar__info">
-          <strong>{product.name}</strong>
+          <strong data-no-translate>{product.name}</strong>
           <span>{priceLabel}</span>
         </div>
         {hasPrice ? (

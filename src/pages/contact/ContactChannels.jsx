@@ -1,11 +1,16 @@
 import React from 'react';
 import { Phone, Mail, MapPin, WhatsApp } from '../../components/Icons';
 import { useData } from '../../context/DataContext';
+import { useLang } from '../../context/LanguageContext';
 
 export function ContactChannels() {
   const { settings } = useData();
+  const { lang } = useLang();
   const waNum = settings?.whatsapp || '212661000000';
-  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent("Bonjour Khatra, je souhaite vous contacter pour un projet B2B / Franchise.")}`;
+  const waMessage = lang === 'ar'
+    ? 'مرحباً خاترة، أود التواصل معكم بشأن مشروع تجاري أو امتياز تجاري.'
+    : 'Bonjour Khatra, je souhaite vous contacter pour un projet B2B / Franchise.';
+  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waMessage)}`;
 
   return (
     <div className="contact-info">

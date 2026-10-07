@@ -66,6 +66,14 @@ export function adaptProduct(p) {
     price: p.price === null || p.price === undefined || p.price === '' || !Number.isFinite(Number(p.price))
       ? null
       : Number(p.price),
+    effectivePrice: p.effectivePrice === null || p.effectivePrice === undefined || !Number.isFinite(Number(p.effectivePrice))
+      ? (p.price === null || p.price === undefined || p.price === '' || !Number.isFinite(Number(p.price)) ? null : Number(p.price))
+      : Number(p.effectivePrice),
+    promo: p.promo === null || p.promo === undefined || p.promo === '' || !Number.isFinite(Number(p.promo))
+      ? null
+      : Number(p.promo),
+    promoExpiresAt: p.promoExpiresAt || p.promo_expires_at || null,
+    promoActive: Boolean(p.promoActive),
     short: p.shortDescription || p.short || '',
     desc: p.description || p.desc || '',
     formats: parseJsonOrArray(p.formats, ['Standard']),

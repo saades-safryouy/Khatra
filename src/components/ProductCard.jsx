@@ -5,6 +5,7 @@ import { ArrowRight } from './Icons';
 import { useCart } from '../context/cartStore';
 import { useData } from '../context/DataContext';
 import { useLang } from '../context/LanguageContext';
+import { useActivePromotion } from '../hooks/useActivePromotion';
 
 /**
  * Props: { product, index, lang? }
@@ -30,6 +31,7 @@ export function ProductCard({ product, index = 0, lang: langProp }) {
   const { addProduct, items } = useCart();
   const { showToast } = useData();
   const { lang: appLang } = useLang();
+  const promoActive = useActivePromotion(product);
   const locale = langProp || appLang || 'fr';
   const t = LABELS[locale] || LABELS.fr;
 
@@ -38,7 +40,7 @@ export function ProductCard({ product, index = 0, lang: langProp }) {
     ? `${new Intl.NumberFormat(locale === 'ar' ? 'ar-MA' : 'fr-MA', {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2,
-      }).format(product.price)} MAD`
+      }).format(promoActive ? product.effectivePrice : product.price)} MAD`
     : t.onRequest;
   const quantity = items.find((item) => String(item.id) === String(product.id))?.quantity || 0;
 
@@ -65,12 +67,16 @@ export function ProductCard({ product, index = 0, lang: langProp }) {
         >
           <div className="product-card-img">
             {product.category && <span className="product-card-cat">{product.category}</span>}
-            <img src={product.img} alt={product.name} loading="lazy" decoding="async" />
+            <img src={product.img} alt={product.name} data-no-translate loading="lazy" decoding="async" />
           </div>
           <div className="product-card-body">
-            <h3>{product.name}</h3>
+            <h3 data-no-translate>{product.name}</h3>
             {product.short && <p>{product.short}</p>}
-            <span className={`product-card-price${hasPrice ? '' : ' is-on-request'}`}>{priceLabel}</span>
+            <span className={`product-card-price${hasPrice ? '' : ' is-on-request'}${promoActive ? ' is-promotional' : ''}`}>
+              {promoActive && <del>{`${new Intl.NumberFormat(locale === 'ar' ? 'ar-MA' : 'fr-MA', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(product.price)} MAD`}</del>}
+              <strong>{priceLabel}</strong>
+              {promoActive && <span className="product-promo-badge">-{product.promo}%</span>}
+            </span>
             <div className="product-card-footer">
               <span className="product-card-tag">
                 {product.formats?.length ? product.formats.join(' · ') : t.fallback}
