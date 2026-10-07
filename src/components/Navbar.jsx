@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
-import { Menu, X, ArrowRight, WhatsApp } from './Icons';
+import { Menu, X, ArrowRight, WhatsApp, ShoppingBag } from './Icons';
 import { useData } from '../context/DataContext';
+import { useCart } from '../context/cartStore';
 import { useLang } from '../context/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
@@ -50,6 +51,7 @@ export function Navbar({ heroTone = 'dark' }) {
   const burgerRef = useRef(null);
   const { pathname } = useLocation();
   const { settings } = useData();
+  const { count: cartCount } = useCart();
   const { t, lang } = useLang();
 
   const isHome = pathname === '/';
@@ -158,6 +160,10 @@ export function Navbar({ heroTone = 'dark' }) {
           </nav>
 
           <div className="site-navbar__actions">
+            <Link to="/panier" className={`navbar-cart-link${lightOnHero ? ' navbar-cart-link--light' : ''}`} aria-label={`Panier, ${cartCount} article${cartCount === 1 ? '' : 's'}`}>
+              <ShoppingBag s={19} />
+              {cartCount > 0 && <span className="navbar-cart-count">{cartCount > 99 ? '99+' : cartCount}</span>}
+            </Link>
             <div className="site-navbar__cta-desktop">
               <Link to="/contact" className="btn btn-primary btn-sm navbar-cta-btn">
                 {t('Devenir Partenaire')}

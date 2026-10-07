@@ -11,6 +11,7 @@ import HomeCategories from './home/HomeCategories';
 import HomeStory from './home/HomeStory';
 import HomeFranchise from './home/HomeFranchise';
 import HomeLocations from './home/HomeLocations';
+import HomeReviews from './home/HomeReviews';
 import { useLang } from '../context/LanguageContext';
 
 const EASE = [0.22, 1, 0.36, 1];
@@ -70,10 +71,13 @@ export function HomePage() {
         </div>
       </section>
 
-      {/* 6. LOCATIONS: Warm Linen surface */}
+      {/* 6. CUSTOMER REVIEWS: only source verified Google Places data */}
+      <HomeReviews />
+
+      {/* 7. LOCATIONS: Warm Linen surface */}
       <HomeLocations />
 
-      {/* 7. B2B CTA BAND: Subtle Night Bordeaux moment before the dark coffee footer */}
+      {/* 8. B2B CTA BAND: Subtle Night Bordeaux moment before the dark coffee footer */}
       <section className="home-cta-band-bordeaux">
         <div className="container">
           <motion.div

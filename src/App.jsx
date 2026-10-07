@@ -1,6 +1,7 @@
 import React from 'react';
 import { Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { DataProvider } from './context/DataContext';
+import { CartProvider } from './context/CartContext';
 import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
@@ -19,6 +20,7 @@ import FranchiseMarketPage from './pages/FranchiseMarketPage';
 import LocationsPage from './pages/LocationsPage';
 import StoryPage from './pages/StoryPage';
 import ContactPage from './pages/ContactPage';
+import CartPage from './pages/CartPage';
 
 
 function PublicLayout() {
@@ -35,6 +37,7 @@ function PublicLayout() {
 export function App() {
   return (
     <DataProvider>
+      <CartProvider>
       <ThemeProvider>
       <LanguageProvider>
       <ScrollToTop />
@@ -51,12 +54,14 @@ export function App() {
           <Route path="/points-de-vente" element={<LocationsPage />} />
           <Route path="/notre-histoire" element={<StoryPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/panier" element={<CartPage />} />
         </Route>
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       </LanguageProvider>
       </ThemeProvider>
+      </CartProvider>
     </DataProvider>
   );
 }

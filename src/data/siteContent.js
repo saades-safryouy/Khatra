@@ -7,7 +7,7 @@ export const DEFAULT_CONTENT = {
 };
 
 export const DEFAULT_SETTINGS = {
-  whatsapp: "212661000000",
+  whatsapp: "212625226140",
   phone: "+212 5 22 00 00 00",
   email: "contact@khatra.ma",
   address: "Casablanca, Maroc",

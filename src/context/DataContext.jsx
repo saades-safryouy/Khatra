@@ -92,10 +92,10 @@ export function DataProvider({ children }) {
   const submitInquiry = async (formData) => {
     try {
       const res = await inquiriesApi.createInquiry(formData);
-      showToast('Votre message a bien �t� transmis. Notre �quipe vous r�pondra sous 24h.');
+      showToast('Votre message a bien été transmis. Notre équipe vous répondra sous 24h.');
       return { success: true, data: res };
     } catch (err) {
-      const msg = err.message || 'Impossible d�envoyer votre message. Veuillez r�essayer.';
+      const msg = err.message || 'Impossible d\'envoyer votre message. Veuillez réessayer.';
       showToast(msg, 'error');
       throw err;
     }
@@ -105,7 +105,7 @@ export function DataProvider({ children }) {
     try {
       const { user: loggedUser } = await authApi.login(email, password);
       setUser(loggedUser || { email, role: 'ADMIN' });
-      showToast('Connexion r�ussie.');
+      showToast('Connexion réussie.');
       return loggedUser;
     } catch (err) {
       if (email === 'admin@khatra.ma' && password === 'khatra2026') {
@@ -141,10 +141,10 @@ export function DataProvider({ children }) {
     try {
       await productsApi.updateProduct(id, prodData, files);
       await refreshData();
-      showToast('Produit mis � jour.');
+      showToast('Produit mis à jour.');
     } catch (err) {
       setProducts((prev) => prev.map((p) => (p.id === id ? adaptProduct({ ...p, ...prodData }) : p)));
-      showToast('Produit mis � jour.');
+      showToast('Produit mis à jour.');
     }
   };
 
@@ -152,10 +152,10 @@ export function DataProvider({ children }) {
     try {
       await productsApi.deleteProduct(id);
       await refreshData();
-      showToast('Produit supprim�.');
+      showToast('Produit supprimé.');
     } catch (err) {
       setProducts((prev) => prev.filter((p) => p.id !== id));
-      showToast('Produit supprim�.');
+      showToast('Produit supprimé.');
     }
   };
 
@@ -163,11 +163,11 @@ export function DataProvider({ children }) {
     try {
       await storesApi.createStore(storeData, file);
       await refreshData();
-      showToast('Point de vente ajout�.');
+      showToast('Point de vente ajouté.');
     } catch (err) {
       const newStore = adaptStore({ ...storeData, id: `s_${Date.now()}` });
       setStores((prev) => [newStore, ...prev]);
-      showToast('Point de vente ajout�.');
+      showToast('Point de vente ajouté.');
     }
   };
 
@@ -175,10 +175,10 @@ export function DataProvider({ children }) {
     try {
       await storesApi.updateStore(id, storeData, file);
       await refreshData();
-      showToast('Point de vente mis � jour.');
+      showToast('Point de vente mis à jour.');
     } catch (err) {
       setStores((prev) => prev.map((s) => (s.id === id ? adaptStore({ ...s, ...storeData }) : s)));
-      showToast('Point de vente mis � jour.');
+      showToast('Point de vente mis à jour.');
     }
   };
 
@@ -186,21 +186,21 @@ export function DataProvider({ children }) {
     try {
       await storesApi.deleteStore(id);
       await refreshData();
-      showToast('Point de vente supprim�.');
+      showToast('Point de vente supprimé .');
     } catch (err) {
       setStores((prev) => prev.filter((s) => s.id !== id));
-      showToast('Point de vente supprim�.');
+      showToast('Point de vente supprimé .');
     }
   };
 
   const updateContent = (newContent) => {
     setContent((prev) => ({ ...prev, ...newContent }));
-    showToast('Contenu mis � jour.');
+    showToast('Contenu mis à jour.');
   };
 
   const updateSettings = (newSettings) => {
     setSettings((prev) => ({ ...prev, ...newSettings }));
-    showToast('Param�tres mis � jour.');
+    showToast('Paramètres mis à jour.');
   };
 
   const value = {

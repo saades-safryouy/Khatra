@@ -63,6 +63,9 @@ export function adaptProduct(p) {
     categoryId: p.categoryId || (p.category && p.category.id),
     categorySlug,
     reference: p.reference || '',
+    price: p.price === null || p.price === undefined || p.price === '' || !Number.isFinite(Number(p.price))
+      ? null
+      : Number(p.price),
     short: p.shortDescription || p.short || '',
     desc: p.description || p.desc || '',
     formats: parseJsonOrArray(p.formats, ['Standard']),

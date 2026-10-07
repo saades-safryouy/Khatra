@@ -6,6 +6,14 @@ export const productsApi = {
     return res?.data || [];
   },
 
+  getProductsPage: async (params = {}) => {
+    const res = await api.get('/products', params);
+    return {
+      items: Array.isArray(res?.data) ? res.data : [],
+      meta: res?.meta || {},
+    };
+  },
+
   getProductBySlug: async (slug) => {
     const res = await api.get(`/products/${encodeURIComponent(slug)}`);
     return res?.data || null;

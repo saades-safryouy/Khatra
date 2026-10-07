@@ -85,7 +85,7 @@ async function request(endpoint, options = {}) {
 }
 
 export const api = {
-  get: (url, params = {}) => {
+  get: (url, params = {}, options = {}) => {
     const query = new URLSearchParams();
     Object.entries(params || {}).forEach(([key, val]) => {
       if (val !== undefined && val !== null && val !== '') {
@@ -93,7 +93,7 @@ export const api = {
       }
     });
     const qs = query.toString();
-    return request(`${url}${qs ? `?${qs}` : ''}`, { method: 'GET' });
+    return request(`${url}${qs ? `?${qs}` : ''}`, { ...options, method: 'GET' });
   },
 
   post: (url, data, isForm = false) => {
