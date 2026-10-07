@@ -4,6 +4,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ToastProvider } from './components/ui';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/adminDashboard/DashboardPage';
+import AdminAccountsPage from './pages/adminDashboard/AdminAccountsPage';
 import CategoryListPage from './pages/adminDashboard/CategoriesPage';
 import CategoryFormPage from './pages/adminDashboard/CategoryFormPage';
 import ProductsPage from './pages/adminDashboard/ProductsPage';
@@ -48,6 +49,7 @@ function MainApp() {
             <DashboardLayout>
               <Routes>
                 <Route path="dashboard" element={<DashboardPage />} />
+                <Route path="accounts" element={<AdminAccountsPage />} />
                 
                 <Route path="categories" element={<CategoryListPage />} />
                 <Route path="categories/new" element={<CategoryFormPage />} />
@@ -92,5 +94,4 @@ function App() {
 }
 
 export default App;
-
 

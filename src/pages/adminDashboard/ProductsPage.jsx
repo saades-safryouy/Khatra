@@ -145,6 +145,7 @@ export default function ProductsPage() {
       )}
       {pendingDelete && (
         <ConfirmDialog
+        
           title="Delete product?"
           message={`“${pendingDelete.name}” will be permanently removed.`}
           onClose={() => setPendingDelete(null)}

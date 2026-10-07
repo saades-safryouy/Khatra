@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Building2, Grid2X2, LayoutGrid, LogOut, MapPin, MessageSquare, Package, Store, Tags } from 'lucide-react';
+import { Building2, Grid2X2, Users, LogOut, MapPin, MessageSquare, Package, Store, Tags } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { cn, initials } from '../../lib/utils';
 import khatraLogo from '../../../public/khatra_logo_old.png';
@@ -11,6 +11,7 @@ const navigation = [
   { label: 'Categories', to: '/admin/categories', icon: Tags }, { label: 'Stores', to: '/admin/stores', icon: Store },
   { label: 'Franchises', to: '/admin/franchises', icon: Building2 }, { label: 'Locations', to: '/admin/locations', icon: MapPin },
   { label: 'Inquiries', to: '/admin/inquiries', icon: MessageSquare },
+  { label: 'Admin Accounts', to: '/admin/accounts', icon: Users },
 ];
 
 export default function AdminLayout({ children }) {       
@@ -62,4 +63,3 @@ export default function AdminLayout({ children }) {
     <main className="min-w-0 flex-1 lg:ml-64"><motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.25 }} className="mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">{children}</motion.div></main>
   </div>;
 }
-
