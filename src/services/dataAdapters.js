@@ -7,7 +7,10 @@ const PRODUCT_FALLBACK_IMAGES = {
   'sirop-biscuit': Images.syrups.biscuit,
   'sirop-caramel': Images.syrups.caramel,
   'sirop-noisette': Images.syrups.noisette,
-  'sirop-toffee': Images.syrups.toffe,
+  'sirop-toffee-nut': Images.syrups.toffeNut,
+  'sirop-toffee': Images.syrups.toffeNut,
+  'sirop-kiwi': Images.nidsys.kiwi,
+  'sirop-raisin': Images.nidsys.raisin,
   'bubbles-fraise': Images.bubbles.frais,
   'bubbles-mangue': Images.bubbles.mangue,
   'bubbles-passion': Images.bubbles.passion,
@@ -15,7 +18,7 @@ const PRODUCT_FALLBACK_IMAGES = {
 
 const CATEGORY_DEFAULT_IMAGES = {
   'Café': Images.khatra.packaging,
-  'Sirops': Images.syrups.syrup3,
+  'Sirops': Images.nidsys.syrupTrio,
   'Bubbles': Images.bubbles.all,
 };
 
