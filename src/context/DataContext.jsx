@@ -108,12 +108,6 @@ export function DataProvider({ children }) {
       showToast('Connexion réussie.');
       return loggedUser;
     } catch (err) {
-      if (email === 'admin@khatra.ma' && password === 'khatra2026') {
-        const u = { email, role: 'ADMIN' };
-        setUser(u);
-        showToast('Connexion r�ussie.');
-        return u;
-      }
       showToast(err.message || 'Identifiants invalides.', 'error');
       throw err;
     }
@@ -131,9 +125,8 @@ export function DataProvider({ children }) {
       await refreshData();
       showToast('Produit ajout�.');
     } catch (err) {
-      const newProd = adaptProduct({ ...prodData, id: `p_${Date.now()}` });
-      setProducts((prev) => [newProd, ...prev]);
-      showToast('Produit enregistr�.');
+      showToast(err.message || 'Impossible d\'ajouter le produit.', 'error');
+      throw err;
     }
   };
 
@@ -143,8 +136,8 @@ export function DataProvider({ children }) {
       await refreshData();
       showToast('Produit mis à jour.');
     } catch (err) {
-      setProducts((prev) => prev.map((p) => (p.id === id ? adaptProduct({ ...p, ...prodData }) : p)));
-      showToast('Produit mis à jour.');
+      showToast(err.message || 'Impossible de mettre à jour le produit.', 'error');
+      throw err;
     }
   };
 
@@ -154,8 +147,8 @@ export function DataProvider({ children }) {
       await refreshData();
       showToast('Produit supprimé.');
     } catch (err) {
-      setProducts((prev) => prev.filter((p) => p.id !== id));
-      showToast('Produit supprimé.');
+      showToast(err.message || 'Impossible de supprimer le produit.', 'error');
+      throw err;
     }
   };
 
@@ -165,9 +158,8 @@ export function DataProvider({ children }) {
       await refreshData();
       showToast('Point de vente ajouté.');
     } catch (err) {
-      const newStore = adaptStore({ ...storeData, id: `s_${Date.now()}` });
-      setStores((prev) => [newStore, ...prev]);
-      showToast('Point de vente ajouté.');
+      showToast(err.message || 'Impossible d\'ajouter le point de vente.', 'error');
+      throw err;
     }
   };
 
@@ -177,8 +169,8 @@ export function DataProvider({ children }) {
       await refreshData();
       showToast('Point de vente mis à jour.');
     } catch (err) {
-      setStores((prev) => prev.map((s) => (s.id === id ? adaptStore({ ...s, ...storeData }) : s)));
-      showToast('Point de vente mis à jour.');
+      showToast(err.message || 'Impossible de mettre à jour le point de vente.', 'error');
+      throw err;
     }
   };
 
@@ -188,8 +180,8 @@ export function DataProvider({ children }) {
       await refreshData();
       showToast('Point de vente supprimé .');
     } catch (err) {
-      setStores((prev) => prev.filter((s) => s.id !== id));
-      showToast('Point de vente supprimé .');
+      showToast(err.message || 'Impossible de supprimer le point de vente.', 'error');
+      throw err;
     }
   };
 
