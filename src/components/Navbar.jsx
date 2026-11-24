@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence, useScroll, useSpring } from 'framer-motion';
-import { Menu, X, ArrowRight, WhatsApp, ShoppingBag } from './Icons';
-import { useData } from '../context/DataContext';
+import { Menu, X, ArrowRight, ShoppingBag } from './Icons';
 import { useCart } from '../context/cartStore';
 import { useLang } from '../context/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
 import ThemeToggle from './ThemeToggle';
-// import KhatraLogo from '../assets/design/khatra_logo_new.png';
-import KhatraLogo from '../assets/design/logo.png';
+import KhatraLogo from '../assets/design/khatra_logo_new.png';
 
 /**
  * Props
@@ -37,11 +35,6 @@ const MOBILE_LINKS = [
   { to: '/contact', label: 'Contact & Devis Pro' },
 ];
 
-const WA_MESSAGE = {
-  fr: 'Bonjour Khatra, je souhaite échanger sur une opportunité B2B / Franchise.',
-  ar: 'مرحباً خاترة، أرغب في مناقشة فرصة شراكة / امتياز تجاري.',
-};
-
 export function Navbar({ heroTone = 'dark' }) {
   const [scrolled, setScrolled] = useState(false);
   const [hidden, setHidden] = useState(false);
@@ -50,7 +43,6 @@ export function Navbar({ heroTone = 'dark' }) {
   const drawerRef = useRef(null);
   const burgerRef = useRef(null);
   const { pathname } = useLocation();
-  const { settings } = useData();
   const { count: cartCount } = useCart();
   const { t, lang } = useLang();
 
@@ -113,9 +105,6 @@ export function Navbar({ heroTone = 'dark' }) {
   ]
     .filter(Boolean)
     .join(' ');
-
-  const waNum = settings?.whatsapp || '212661000000';
-  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(WA_MESSAGE[lang] || WA_MESSAGE.fr)}`;
 
   const slideDir = lang === 'ar' ? '-100%' : '100%';
   const mobileMenuVariants = {
@@ -239,15 +228,6 @@ export function Navbar({ heroTone = 'dark' }) {
                 <Link to="/contact" className="btn btn-primary" onClick={closeMobile}>
                   {t('Devenir Partenaire')} <ArrowRight s={16} />
                 </Link>
-                <a
-                  href={waUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-whatsapp"
-                  onClick={closeMobile}
-                >
-                  <WhatsApp s={18} color="#fff" /> {t('WhatsApp Direct')}
-                </a>
               </div>
             </div>
           </motion.div>

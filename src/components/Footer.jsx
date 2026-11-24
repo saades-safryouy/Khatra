@@ -35,6 +35,7 @@ export function Footer() {
             <Link to="/" className="site-editorial-footer__logo">
               <img src={KhatraLogo} alt="Khatra Logo" />
             </Link>
+            <p className="site-editorial-footer__slogan" lang="fr">NCHORBOHA KHAAAATRA</p>
             <p className="site-editorial-footer__manifesto">
               {t(
                 "Khatra développe un écosystème marocain d'exception autour du café de spécialité, des sirops gourmands et de concepts de franchise rentables et modernes."
