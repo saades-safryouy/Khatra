@@ -27,10 +27,17 @@ const COPY = {
     phone: 'Téléphone (facultatif)',
     notes: 'Votre message (facultatif)',
     whatsapp: 'Envoyer via WhatsApp',
+    waNote: 'Demande transmise via WhatsApp — aucun paiement en ligne.',
     emailAction: 'Envoyer par e-mail',
     sending: 'Envoi en cours…',
     clear: 'Vider le panier',
     sentWa: 'Votre demande a été enregistrée. Ouvrez WhatsApp pour transmettre le récapitulatif.',
+    sentWaDirect: 'Ouvrez WhatsApp pour transmettre le récapitulatif de votre demande.',
+    messageIntro: 'Bonjour Khatra, voici ma demande de devis :',
+    mailSubject: 'Demande de devis — Khatra',
+    emailFallback: 'Le serveur est injoignable. Vous pouvez envoyer le même récapitulatif avec votre messagerie.',
+    emailOpen: 'Envoyer avec ma messagerie',
+    quoteUnavailable: 'Tarifs du catalogue momentanément indisponibles — votre demande reste envoyable, les prix seront confirmés par notre équipe.',
     sentEmail: 'Votre demande a été enregistrée et envoyée par e-mail.',
     emailNotConfigured: 'Votre demande est enregistrée, mais l’envoi par e-mail n’est pas configuré sur le serveur. Vous pouvez transmettre le même récapitulatif par WhatsApp.',
     emailFailed: 'Votre demande est enregistrée, mais le serveur n’a pas pu envoyer l’e-mail. Vous pouvez transmettre le même récapitulatif par WhatsApp.',
@@ -57,10 +64,17 @@ const COPY = {
     phone: 'الهاتف (اختياري)',
     notes: 'رسالتكم (اختياري)',
     whatsapp: 'إرسال عبر واتساب',
+    waNote: 'يُرسل الطلب عبر واتساب — لا يوجد دفع عبر الإنترنت.',
     emailAction: 'إرسال بالبريد الإلكتروني',
     sending: 'جارٍ الإرسال…',
     clear: 'إفراغ السلة',
     sentWa: 'تم تسجيل طلبكم. افتحوا واتساب لإرسال الملخص.',
+    sentWaDirect: 'افتحوا واتساب لإرسال ملخص طلبكم.',
+    messageIntro: 'مرحباً خاترة، إليكم طلب عرض السعر الخاص بي:',
+    mailSubject: 'طلب عرض سعر — خاترة',
+    emailFallback: 'الخادم غير متاح حالياً. يمكنكم إرسال الملخص نفسه عبر بريدكم الإلكتروني.',
+    emailOpen: 'الإرسال عبر بريدي الإلكتروني',
+    quoteUnavailable: 'أسعار الكتالوج غير متاحة مؤقتاً — يبقى إرسال طلبكم ممكناً وسيؤكد فريقنا الأسعار.',
     sentEmail: 'تم تسجيل طلبكم وإرساله بالبريد الإلكتروني.',
     emailNotConfigured: 'تم تسجيل الطلب، لكن البريد الإلكتروني غير مهيأ على الخادم. يمكنكم إرسال الملخص نفسه عبر واتساب.',
     emailFailed: 'تم تسجيل الطلب، لكن الخادم لم يتمكن من إرسال البريد الإلكتروني. يمكنكم إرسال الملخص نفسه عبر واتساب.',
@@ -92,13 +106,38 @@ export default function CartPage() {
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState(null);
   const [whatsappUrl, setWhatsappUrl] = useState('');
+  const [mailtoUrl, setMailtoUrl] = useState('');
   const [emailSent, setEmailSent] = useState(false);
   const [quoteState, setQuoteState] = useState({ signature: '', error: '' });
   const [quoteRefresh, setQuoteRefresh] = useState(0);
   const cartSignature = JSON.stringify(items.map(({ id, quantity }) => ({ productId: id, quantity })));
   const quoteRequestKey = `${cartSignature}:${lang}:${quoteRefresh}`;
   const quoteLoading = items.length > 0 && quoteState.signature !== quoteRequestKey;
-  const quoteError = items.length > 0 && quoteState.signature === quoteRequestKey ? quoteState.error : '';
+  // A failed backend quote is a soft state only: it must never block sending the
+  // panier — prices stay as stored locally and the send below is client-side.
+  const quoteFailed = items.length > 0 && quoteState.signature === quoteRequestKey && Boolean(quoteState.error);
+  const anyOnRequest = items.some((item) => item.price === null || item.price === undefined);
+
+  // Client-side recap of the panier (items + quantities + customer details),
+  // used for the WhatsApp message and the mailto fallback — no backend needed.
+  const buildSummary = () => {
+    const lines = [text.messageIntro, ''];
+    items.forEach((item) => {
+      const pricePart = item.price === null || item.price === undefined
+        ? text.priceOnRequest
+        : formatMoney(item.price, lang);
+      lines.push(`• ${item.name} × ${item.quantity} — ${pricePart}`);
+    });
+    lines.push('');
+    lines.push(`${text.totalQty} : ${count}`);
+    lines.push(`${text.cartTotal} : ${anyOnRequest ? text.priceOnRequest : formatMoney(total, lang)}`);
+    if (form.name) lines.push(`${text.name} : ${form.name}`);
+    if (form.company) lines.push(`${text.company} : ${form.company}`);
+    if (form.email) lines.push(`${text.email} : ${form.email}`);
+    if (form.phone) lines.push(`${text.phone} : ${form.phone}`);
+    if (form.notes) lines.push(`${text.notes} : ${form.notes}`);
+    return lines.join('\n');
+  };
 
   useEffect(() => {
     const requestedItems = JSON.parse(cartSignature);
@@ -131,28 +170,55 @@ export default function CartPage() {
   const submit = async (channel, event) => {
     event.preventDefault();
     if (event.type === 'click' && !event.currentTarget.form?.reportValidity()) return;
-    if (submitting || quoteLoading || quoteError || !items.length) return;
+    // No quoteLoading / quoteError gate here on purpose: the backend quote is a
+    // best-effort price refresh, the send itself must always be possible.
+    if (submitting || !items.length) return;
     setSubmitting(true);
     setFeedback(null);
     setWhatsappUrl('');
-    try {
-      const result = await inquiriesApi.createInquiry({
-        type: 'PRODUCT',
-        channel,
-        language: lang,
-        ...form,
-        items: items.map((item) => ({ productId: item.id, quantity: item.quantity })),
-      });
-      const summary = result?.summary || result?.inquiry?.message || '';
+    setMailtoUrl('');
+    setEmailSent(false);
+    const summary = buildSummary();
+    const payload = {
+      type: 'PRODUCT',
+      channel,
+      language: lang,
+      ...form,
+      items: items.map((item) => ({ productId: item.id, quantity: item.quantity })),
+    };
+
+    if (channel === 'whatsapp') {
+      // Register the inquiry server-side when the backend is reachable, but never
+      // block the handoff on it: the WhatsApp message is built client-side and
+      // always opens with the full panier recap.
+      inquiriesApi.createInquiry(payload).catch(() => {});
       setWhatsappUrl(makeWhatsAppUrl(settings?.whatsapp, summary));
+      setFeedback(text.sentWaDirect);
+      setSubmitting(false);
+      clearCart();
+      return;
+    }
+
+    // Email channel: the server sends the e-mail when it is reachable…
+    try {
+      const result = await inquiriesApi.createInquiry(payload);
+      const serverSummary = result?.summary || result?.inquiry?.message || '';
+      if (serverSummary) setWhatsappUrl(makeWhatsAppUrl(settings?.whatsapp, serverSummary));
       const delivery = result?.emailDelivery;
       setEmailSent(delivery?.sent === true);
-      setFeedback(channel === 'email'
-        ? delivery?.sent ? text.sentEmail : delivery?.configured ? text.emailFailed : text.emailNotConfigured
-        : text.sentWa);
+      setFeedback(delivery?.sent ? text.sentEmail : delivery?.configured ? text.emailFailed : text.emailNotConfigured);
       clearCart();
     } catch (error) {
-      setFeedback(error.message || text.error);
+      // …and when it is not, fall back to the visitor's own mail client,
+      // addressed to the shop's configured e-mail with the same recap.
+      const to = String(settings?.email || '').trim();
+      if (to) {
+        setMailtoUrl(`mailto:${to}?subject=${encodeURIComponent(text.mailSubject)}&body=${encodeURIComponent(summary)}`);
+        setFeedback(text.emailFallback);
+        clearCart();
+      } else {
+        setFeedback(error.message || text.error);
+      }
     } finally {
       setSubmitting(false);
     }
@@ -176,6 +242,11 @@ export default function CartPage() {
                 <WhatsApp s={18} color="#fff" /> {text.openWhatsApp}
               </a>
             )}
+            {mailtoUrl && (
+              <a href={mailtoUrl} className="btn btn-outline">
+                {text.emailOpen}
+              </a>
+            )}
             <Link to="/produits" className="btn btn-primary">{text.browse}</Link>
           </section>
         ) : (
@@ -191,12 +262,18 @@ export default function CartPage() {
                     <strong>{item.name}</strong>
                   </div>
                   <span className="cart-unit-price" data-label={text.unitPrice}>
-                    {item.promo !== null && item.promo !== undefined && new Date(item.promoExpiresAt).getTime() > Date.now() && (
-                      <del>{formatMoney(item.originalPrice, lang)}</del>
+                    {item.price === null || item.price === undefined ? (
+                      <strong>{text.priceOnRequest}</strong>
+                    ) : (
+                      <>
+                        {item.promo !== null && item.promo !== undefined && new Date(item.promoExpiresAt).getTime() > Date.now() && (
+                          <del>{formatMoney(item.originalPrice, lang)}</del>
+                        )}
+                        <strong>{formatMoney(item.price, lang)}</strong>
+                        {item.promo !== null && item.promo !== undefined && new Date(item.promoExpiresAt).getTime() > Date.now()
+                          && <span className="product-promo-badge">-{item.promo}%</span>}
+                      </>
                     )}
-                    <strong>{formatMoney(item.price, lang)}</strong>
-                    {item.promo !== null && item.promo !== undefined && new Date(item.promoExpiresAt).getTime() > Date.now()
-                      && <span className="product-promo-badge">-{item.promo}%</span>}
                   </span>
                   <div className="cart-quantity" data-label={text.quantity}>
                     <button type="button" onClick={() => setQuantity(item.id, item.quantity - 1)} disabled={item.quantity <= 1} aria-label={lang === 'ar' ? 'تقليل الكمية' : 'Diminuer la quantité'}>−</button>
@@ -210,7 +287,7 @@ export default function CartPage() {
                     />
                     <button type="button" onClick={() => setQuantity(item.id, item.quantity + 1)} disabled={item.quantity >= 10000} aria-label={lang === 'ar' ? 'زيادة الكمية' : 'Augmenter la quantité'}>+</button>
                   </div>
-                  <strong className="cart-line-total" data-label={text.lineTotal}>{formatMoney(Math.round(item.price * 100) * item.quantity / 100, lang)}</strong>
+                  <strong className="cart-line-total" data-label={text.lineTotal}>{item.price === null || item.price === undefined ? text.priceOnRequest : formatMoney(Math.round(item.price * 100) * item.quantity / 100, lang)}</strong>
                   <button type="button" className="cart-remove" onClick={() => removeProduct(item.id)} aria-label={`${text.remove} ${item.name}`}>
                     <Trash s={17} />
                   </button>
@@ -224,7 +301,8 @@ export default function CartPage() {
             <aside className="cart-summary-panel">
               <h2>{text.cartTotal}</h2>
               <div className="cart-summary-line"><span>{text.totalQty}</span><strong>{count}</strong></div>
-              <div className="cart-summary-line cart-summary-total"><span>{text.cartTotal}</span><strong>{formatMoney(total, lang)}</strong></div>
+              <div className="cart-summary-line cart-summary-total"><span>{text.cartTotal}</span><strong>{anyOnRequest ? text.priceOnRequest : formatMoney(total, lang)}</strong></div>
+              <p className="cart-wa-note"><WhatsApp s={15} /> {text.waNote}</p>
               <form onSubmit={(event) => submit('whatsapp', event)} className="cart-inquiry-form">
                 <h3>{text.customer}</h3>
                 <label>{text.name}<input required maxLength="200" value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} /></label>
@@ -233,18 +311,23 @@ export default function CartPage() {
                 <label>{text.phone}<input type="tel" maxLength="50" value={form.phone} onChange={(event) => setForm({ ...form, phone: event.target.value })} /></label>
                 <label>{text.notes}<textarea rows="3" maxLength="2000" value={form.notes} onChange={(event) => setForm({ ...form, notes: event.target.value })} /></label>
                 {quoteLoading && <p className="cart-feedback" role="status">{lang === 'ar' ? 'جارٍ تحديث الأسعار من الكتالوج…' : 'Actualisation des prix du catalogue…'}</p>}
-                {quoteError && <p className="cart-feedback" role="alert">{quoteError}</p>}
-                {feedback && <p className={`cart-feedback${emailSent || feedback === text.sentWa ? ' is-success' : ''}`} role="status">{feedback}</p>}
+                {quoteFailed && <p className="cart-feedback" role="status">{text.quoteUnavailable}</p>}
+                {feedback && <p className={`cart-feedback${emailSent || feedback === text.sentWa || feedback === text.sentWaDirect ? ' is-success' : ''}`} role="status">{feedback}</p>}
                 {whatsappUrl && (
                   <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp cart-action">
                     <WhatsApp s={18} color="#fff" /> {text.openWhatsApp}
                   </a>
                 )}
-                <button type="submit" className="btn btn-whatsapp cart-action" disabled={submitting || quoteLoading || Boolean(quoteError)}>
-                  <WhatsApp s={18} color="#fff" /> {submitting || quoteLoading ? text.sending : text.whatsapp}
+                {mailtoUrl && (
+                  <a href={mailtoUrl} className="btn btn-outline cart-action">
+                    {text.emailOpen}
+                  </a>
+                )}
+                <button type="submit" className="btn btn-whatsapp cart-action" disabled={submitting}>
+                  <WhatsApp s={18} color="#fff" /> {submitting ? text.sending : text.whatsapp}
                 </button>
-                <button type="button" className="btn btn-outline cart-action" disabled={submitting || quoteLoading || Boolean(quoteError)} onClick={(event) => submit('email', event)}>
-                  {submitting || quoteLoading ? text.sending : text.emailAction}
+                <button type="button" className="btn btn-outline cart-action" disabled={submitting} onClick={(event) => submit('email', event)}>
+                  {submitting ? text.sending : text.emailAction}
                 </button>
               </form>
             </aside>

@@ -13,7 +13,13 @@ export function FranchisePage() {
       />
 
       {/* Franchise Hero */}
-      <section className="franchise-hero">
+      <section
+        className="franchise-hero franchise-hero--banner"
+        style={{
+          '--hero-img': `url("${Images.heroes.franchise.desktop}")`,
+          '--hero-img-m': `url("${Images.heroes.franchise.mobile}")`,
+        }}
+      >
         <div className="franchise-hero-inner">
           <span className="eyebrow" style={{ color: 'var(--caramel-l)' }}>Développement Réseau</span>
           <h1>Rejoignez l’aventure Khatra.</h1>

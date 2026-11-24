@@ -106,7 +106,7 @@ export function ContactForm() {
             <input
               type="text"
               required
-              placeholder="Ex: Youssef El Mansouri"
+              placeholder="Nom Prénom"
               value={form.name}
               onChange={e => setForm({ ...form, name: e.target.value })}
             />

@@ -5,7 +5,7 @@ import { useData } from '../context/DataContext';
 import { useLang } from '../context/LanguageContext';
 import productsApi from '../services/productsApi';
 import { adaptProduct } from '../services/dataAdapters';
-import { ArrowLeft, Check, WhatsApp, ArrowRight } from '../components/Icons';
+import { ArrowLeft, Check, ArrowRight } from '../components/Icons';
 import ProductCard from '../components/ProductCard';
 import SEO from '../components/SEO';
 import { useCart } from '../context/cartStore';
@@ -13,7 +13,7 @@ import { useActivePromotion } from '../hooks/useActivePromotion';
 
 export function ProductDetailPage() {
   const { slug } = useParams();
-  const { products, settings, loading: contextLoading, showToast } = useData();
+  const { products, loading: contextLoading, showToast } = useData();
   const { addProduct } = useCart();
   const { t, lang } = useLang();
   const [lookupResult, setLookupResult] = useState(null);
@@ -110,11 +110,6 @@ export function ProductDetailPage() {
     ? `${formatProductPrice(promoActive ? product.effectivePrice : product.price)} MAD`
     : t('Prix sur demande');
 
-  const waNum = settings?.whatsapp || '212661000000';
-  const waMsg = lang === 'ar'
-    ? `مرحباً خاترة، أود الحصول على معلومات مهنية وأسعار المنتج: ${product.name}.`
-    : `Bonjour Khatra, je souhaite obtenir des informations professionnelles et tarifs pour le produit : ${product.name}.`;
-  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waMsg)}`;
   const quoteUrl = `/contact?product=${encodeURIComponent(product.name)}`;
   const currentImage = selectedImg || product.img;
   const slide = lang === 'ar' ? 18 : -18;
@@ -226,19 +221,28 @@ export function ProductDetailPage() {
             </div>
           )}
 
-          {/* clear hierarchy: ONE primary action */}
+          {/* clear hierarchy: ONE primary action — add to the quote-request panier,
+              with the B2B offer as a secondary path */}
           <div className="product-detail-actions">
-            {hasPrice && (
-              <button type="button" className="btn btn-primary" onClick={handleAdd}>
-                {t('Ajouter au panier')}
-              </button>
+            {hasPrice ? (
+              <>
+                <button type="button" className="btn btn-primary" onClick={handleAdd}>
+                  {t('Ajouter au panier')}
+                </button>
+                <Link to={quoteUrl} className="btn btn-outline">
+                  {t('Demander une offre tarifaire B2B')} <ArrowRight s={16} />
+                </Link>
+              </>
+            ) : (
+              <>
+                <button type="button" className="btn btn-primary" onClick={handleAdd}>
+                  {t('Ajouter au panier')}
+                </button>
+                <Link to={quoteUrl} className="btn btn-outline">
+                  {t('Demander une offre tarifaire B2B')} <ArrowRight s={16} />
+                </Link>
+              </>
             )}
-            <Link to={quoteUrl} className={`btn ${hasPrice ? 'btn-outline' : 'btn-primary'}`}>
-              {t('Demander une offre tarifaire B2B')} <ArrowRight s={16} />
-            </Link>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">
-              <WhatsApp s={18} color="#fff" /> {t('Échanger directement sur WhatsApp')}
-            </a>
 
             <ul className="product-trust">
               <li><Check s={14} /> {t('Tarification dégressive par volume')}</li>
@@ -270,15 +274,9 @@ export function ProductDetailPage() {
           <strong data-no-translate>{product.name}</strong>
           <span>{priceLabel}</span>
         </div>
-        {hasPrice ? (
-          <button type="button" className="btn btn-primary btn-sm" onClick={handleAdd}>
-            {t('Ajouter au panier')}
-          </button>
-        ) : (
-          <Link to={quoteUrl} className="btn btn-primary btn-sm">
-            {t('Demander une offre tarifaire B2B')}
-          </Link>
-        )}
+        <button type="button" className="btn btn-primary btn-sm" onClick={handleAdd}>
+          {t('Ajouter au panier')}
+        </button>
       </div>
     </div>
   );

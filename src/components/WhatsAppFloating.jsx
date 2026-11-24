@@ -6,7 +6,7 @@ import { WhatsApp } from './Icons';
 export function WhatsAppFloating() {
   const { settings } = useData();
   const { lang } = useLang();
-  const num = settings?.whatsapp || '212661000000';
+  const num = settings?.whatsapp || '212700350019';
   const message = lang === 'ar'
     ? 'مرحباً خاترة، أود مناقشة فرصة تجارية أو امتياز تجاري.'
     : 'Bonjour Khatra, je souhaite échanger sur une opportunité B2B / Franchise.';
@@ -22,6 +22,7 @@ export function WhatsAppFloating() {
       title="Échanger sur WhatsApp"
     >
       <WhatsApp s={26} color="#ffffff" />
+      <span className="wa-float__label" aria-hidden="true">WhatsApp</span>
     </a>
   );
 }

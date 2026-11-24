@@ -1,34 +1,81 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { useData } from '../context/DataContext';
 import { useLang } from '../context/LanguageContext';
 import { useGeolocation } from '../hooks/useGeolocation';
 import { sortStoresByDistance, formatDistance } from '../utils/geo';
-import { MapPin, ArrowUpRight, ArrowRight } from '../components/Icons';
+import { MapPin, ArrowUpRight, ArrowRight, ArrowLeft } from '../components/Icons';
+import Images from '../assets/images';
 import SEO from '../components/SEO';
 import StoreMap from '../components/StoreMap';
 
 export function LocationsPage() {
-  const { stores, locations } = useData();
+  const { stores } = useData();
   const { t, lang } = useLang();
-  const [selectedCity, setSelectedCity] = useState('Toutes');
+  // Drill-down level: null = whole of Morocco (city badges on the
+  // map, every card below); a city name = that city's stores only.
+  const [selectedCity, setSelectedCity] = useState(null);
+  const [selectedStoreId, setSelectedStoreId] = useState(null);
   const { coords, loading: geoLoading, error: geoError, locate, clear: clearGeo } = useGeolocation();
 
-  const cities = useMemo(() => {
-    return [
-      'Toutes',
-      ...Array.from(
-        new Set([
-          ...(locations || []).map((l) => l.city || l.name),
-          ...(stores || []).map((s) => s.city),
-        ])
-      ).filter(Boolean),
-    ];
-  }, [locations, stores]);
+  // Cities with their store counts, biggest network first.
+  const cityGroups = useMemo(() => {
+    const counts = new Map();
+    (stores || []).forEach((s) => {
+      if (!s.city) return;
+      counts.set(s.city, (counts.get(s.city) || 0) + 1);
+    });
+    return [...counts.entries()]
+      .map(([city, count]) => ({ city, count }))
+      .sort((a, b) => b.count - a.count || a.city.localeCompare(b.city, 'fr'));
+  }, [stores]);
+
+  // The single nearest store once the visitor is geolocated.
+  const nearestStore = useMemo(() => {
+    if (!coords || !stores || stores.length === 0) return null;
+    return sortStoresByDistance(stores, coords.latitude, coords.longitude)[0] || null;
+  }, [coords, stores]);
+
+  // Finder success: drill into the nearest store's city and focus
+  // the store itself — the map flies there, its popup opens and
+  // its card is badged "Le plus proche". (State adjusted during
+  // render, the React-endorsed pattern for prop/state changes.)
+  const [prevCoords, setPrevCoords] = useState(null);
+  if (coords !== prevCoords) {
+    setPrevCoords(coords);
+    if (coords && nearestStore) {
+      setSelectedCity(nearestStore.city);
+      setSelectedStoreId(nearestStore.id);
+    }
+  }
+
+  const selectCity = (city) => {
+    setSelectedCity(city);
+    setSelectedStoreId(null);
+  };
+
+  const handleFinderClick = () => {
+    setSelectedStoreId(null);
+    if (coords) {
+      clearGeo();
+    } else {
+      locate();
+    }
+  };
+
+  const handleSelectStore = (storeId) => {
+    const store = (stores || []).find((s) => s.id === storeId);
+    if (store && store.city && store.city !== selectedCity) {
+      setSelectedCity(store.city);
+    }
+    setSelectedStoreId(storeId);
+    document.getElementById('stores-map')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const processedStores = useMemo(() => {
     let list = stores || [];
-    if (selectedCity !== 'Toutes') {
+    if (selectedCity) {
       list = list.filter((s) => s.city === selectedCity);
     }
     if (coords) {
@@ -41,11 +88,18 @@ export function LocationsPage() {
     <div className="locations-page">
       <SEO
         title="Points de Vente"
-        description="Découvrez nos coffee shops et points de vente Khatra à Casablanca, Rabat, Marrakech et Tanger."
+        description="Découvrez notre point de vente Khatra Market à Casablanca et trouvez le Khatra le plus proche de vous."
       />
 
       {/* Page Header */}
-      <div className="page-header no-image">
+      <div className="page-header">
+        <div className="page-header-bg">
+          <picture>
+            <source media="(max-width: 768px)" srcSet={Images.heroes.locations.mobile} />
+            <img src={Images.heroes.locations.desktop} alt="" />
+          </picture>
+        </div>
+        <div className="page-header-overlay" />
         <div className="page-header-inner">
           <span className="eyebrow">{t('Réseau & Présence')}</span>
           <h1>{t('Points de Vente')}</h1>
@@ -55,36 +109,47 @@ export function LocationsPage() {
         </div>
       </div>
 
-      {/* Geolocation + City Filter Bar */}
+      {/* Geolocation + City Filter Bar (city chips: phones only —
+          desktop uses the "Villes" panel beside the map) */}
       <div style={{ background: 'var(--linen)', borderBottom: '1px solid rgba(42,30,23,0.08)', padding: '20px 0', position: 'sticky', top: 'var(--nav-h)', zIndex: 10 }}>
         <div className="container" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
-          <div style={{ display: 'flex', gap: '10px', overflowX: 'auto', paddingBottom: '4px', maxWidth: '100%' }}>
-            {cities.map((city) => (
+          <div className="locations-city-chips">
+            {selectedCity && (
+              <button
+                type="button"
+                onClick={() => selectCity(null)}
+                className="btn btn-sm btn-primary"
+                style={{ padding: '6px 16px', borderRadius: '30px', fontSize: '0.75rem', flex: '0 0 auto', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              >
+                <ArrowLeft s={12} /> {t('Tout le Maroc')}
+              </button>
+            )}
+            {cityGroups.map(({ city, count }) => (
               <button
                 key={city}
-                onClick={() => setSelectedCity(city)}
+                type="button"
+                onClick={() => selectCity(city)}
                 className={`btn btn-sm ${selectedCity === city ? 'btn-primary' : 'btn-outline-dark'}`}
-                style={{ padding: '6px 16px', borderRadius: '30px', fontSize: '0.75rem' }}
+                style={{ padding: '6px 16px', borderRadius: '30px', fontSize: '0.75rem', flex: '0 0 auto', whiteSpace: 'nowrap' }}
               >
-                {city === 'Toutes' ? t('Toutes les villes') : t(city)}
+                {t(city)} · {count}
               </button>
             ))}
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <div className="nearest-finder-wrap" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <button
               type="button"
-              onClick={coords ? clearGeo : locate}
+              onClick={handleFinderClick}
               disabled={geoLoading}
-              className={`btn btn-sm ${coords ? 'btn-primary' : 'btn-outline'}`}
-              style={{ borderRadius: '30px', padding: '6px 16px', fontSize: '0.75rem' }}
+              className={`btn nearest-finder-btn ${coords ? 'btn-primary' : 'btn-outline'}`}
             >
               {geoLoading ? (
                 <span>{t('Localisation...')}</span>
               ) : coords ? (
                 <span>✓ {t('Autour de moi')} ({t('Effacer')})</span>
               ) : (
-                <span>📍 {t('À proximité')}</span>
+                <span>📍 {t('Trouver le Khatra le plus proche')}</span>
               )}
             </button>
           </div>
@@ -99,32 +164,99 @@ export function LocationsPage() {
               padding: '6px 12px',
               borderRadius: 'var(--radius)'
             }}>
-              {geoError === 'PERMISSION_DENIED'
-                ? t('Autorisation de géolocalisation refusée par votre navigateur.')
-                : t('Position géographique indisponible.')}
+              {t('Position non disponible — voici nos points de vente.')}
             </div>
           </div>
         )}
       </div>
 
-      {/* Interactive Map Section */}
-      <div className="container" style={{ marginTop: '40px' }}>
-        <StoreMap stores={processedStores} userCoords={coords} height="480px" />
+      {/* Interactive Map Section — "Villes" panel + Morocco map */}
+      <div className="container" id="stores-map" style={{ marginTop: '40px', scrollMarginTop: 'calc(var(--nav-h) + 12px)' }}>
+        <div className="locations-map-layout">
+          <motion.aside
+            className="locations-city-panel"
+            initial={{ opacity: 0, x: -16 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+          >
+            <h2 className="locations-city-panel__title">{t('Villes')}</h2>
+            <div className="locations-city-list">
+              {selectedCity && (
+                <button
+                  type="button"
+                  className="locations-city-row locations-city-row--back"
+                  onClick={() => selectCity(null)}
+                >
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <ArrowLeft s={14} /> {t('Tout le Maroc')}
+                  </span>
+                </button>
+              )}
+              {cityGroups.map(({ city, count }) => (
+                <button
+                  key={city}
+                  type="button"
+                  className={`locations-city-row${selectedCity === city ? ' is-active' : ''}`}
+                  onClick={() => selectCity(city)}
+                >
+                  <span className="locations-city-name">{t(city)}</span>
+                  <span className="locations-city-count">{count}</span>
+                </button>
+              ))}
+            </div>
+          </motion.aside>
+
+          <div className="locations-map-wrap">
+            <StoreMap
+              stores={stores || []}
+              userCoords={coords}
+              height="480px"
+              selectedCity={selectedCity}
+              onSelectCity={selectCity}
+              selectedStoreId={selectedStoreId}
+              onSelectStore={setSelectedStoreId}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Locations Grid */}
       <div className="container section">
-        <div className="locations-grid" style={{ padding: 0 }}>
-          {processedStores.map((store, idx) => {
-            const isNearest = coords && idx === 0;
+        {selectedCity && (
+          <div className="locations-results-head">
+            <h2 style={{ margin: 0 }}>{t(selectedCity)}</h2>
+            <span className="locations-results-count">
+              {processedStores.length} {t('Points de vente')}
+            </span>
+            <button
+              type="button"
+              onClick={() => selectCity(null)}
+              className="btn btn-outline-dark btn-sm"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            >
+              <ArrowLeft s={14} /> {t('Tout le Maroc')}
+            </button>
+          </div>
+        )}
+        <motion.div
+          className="locations-grid"
+          style={{ padding: 0 }}
+          key={selectedCity || 'all'}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+        >
+          {processedStores.map((store) => {
+            const isNearest = Boolean(nearestStore && store.id === nearestStore.id);
 
             return (
               <div
                 key={store.id}
                 className="location-card"
+                onClick={() => handleSelectStore(store.id)}
                 style={isNearest ? { border: '2px solid var(--caramel)', position: 'relative' } : undefined}
               >
-                <div className="location-card-img" style={{ position: 'relative' }}>
+                <div className={`location-card-img${store.imgLogo ? ' location-card-img--logo' : ''}`} style={{ position: 'relative' }}>
                   <img src={store.img} alt={store.name} data-no-translate loading="lazy" />
                   {isNearest && (
                     <span style={{
@@ -159,7 +291,7 @@ export function LocationsPage() {
                         padding: '2px 8px',
                         borderRadius: '12px',
                       }}>
-                        {formatDistance(store.distanceKm, lang)}
+                        {lang === 'ar' ? formatDistance(store.distanceKm, lang) : `à ${formatDistance(store.distanceKm, lang)}`}
                       </span>
                     )}
                   </div>
@@ -168,14 +300,17 @@ export function LocationsPage() {
                     <span style={{ color: 'var(--toffee)', flexShrink: 0, marginTop: '2px' }}><MapPin s={16} /></span>
                     <span>{store.address}</span>
                   </p>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--toffee)', marginBottom: '20px' }}>
-                    ⏱ {store.hours}
-                  </div>
+                  {store.hours && (
+                    <div style={{ fontSize: '0.8rem', color: 'var(--toffee)', marginBottom: '20px' }}>
+                      ⏱ {store.hours}
+                    </div>
+                  )}
                   {store.mapsUrl && (
                     <a
                       href={store.mapsUrl}
                       target="_blank"
                       rel="noopener noreferrer"
+                      onClick={(e) => e.stopPropagation()}
                       className="btn btn-outline-dark btn-sm"
                       style={{ width: '100%', justifyContent: 'center' }}
                     >
@@ -186,7 +321,7 @@ export function LocationsPage() {
               </div>
             );
           })}
-        </div>
+        </motion.div>
       </div>
 
       {/* Franchise Callout */}

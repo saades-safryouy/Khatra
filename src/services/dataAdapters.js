@@ -1,5 +1,6 @@
 import Images from '../assets/images';
 import { resolveImageUrl } from './api';
+import { DEFAULT_STORES } from '../data/stores';
 
 const PRODUCT_FALLBACK_IMAGES = {
   'grain-khatra': Images.khatra.packaging,
@@ -7,10 +8,7 @@ const PRODUCT_FALLBACK_IMAGES = {
   'sirop-biscuit': Images.syrups.biscuit,
   'sirop-caramel': Images.syrups.caramel,
   'sirop-noisette': Images.syrups.noisette,
-  'sirop-toffee-nut': Images.syrups.toffeNut,
-  'sirop-toffee': Images.syrups.toffeNut,
-  'sirop-kiwi': Images.nidsys.kiwi,
-  'sirop-raisin': Images.nidsys.raisin,
+  'sirop-toffee': Images.syrups.toffe,
   'bubbles-fraise': Images.bubbles.frais,
   'bubbles-mangue': Images.bubbles.mangue,
   'bubbles-passion': Images.bubbles.passion,
@@ -18,7 +16,7 @@ const PRODUCT_FALLBACK_IMAGES = {
 
 const CATEGORY_DEFAULT_IMAGES = {
   'Café': Images.khatra.packaging,
-  'Sirops': Images.nidsys.syrupTrio,
+  'Sirops': Images.syrups.syrup3,
   'Bubbles': Images.bubbles.all,
 };
 
@@ -91,7 +89,14 @@ export function adaptProduct(p) {
 export function adaptStore(s) {
   if (!s) return null;
 
-  const cityName = s.city || (s.location && (s.location.city || s.location.name)) || 'Casablanca';
+  // Local record for the same id: source of the verified city and of the
+  // card picture when the incoming record carries neither.
+  const localRecord = DEFAULT_STORES.find((st) => st.id === s.id || st.id === `s${s.id}`) || null;
+
+  const cityName = s.city
+    || (s.location && (s.location.city || s.location.name))
+    || (localRecord && localRecord.city)
+    || 'Casablanca';
 
   let type = s.type || 'Coffee Shop';
   let hours = s.hours || 'Lun - Dim: 07h00 - 23h00';
@@ -104,12 +109,21 @@ export function adaptStore(s) {
   }
 
   let img = '';
+  let imgLogo = false;
   if (s.image) {
     img = resolveImageUrl(s.image);
   } else if (s.imageUrl || s.img) {
     img = resolveImageUrl(s.imageUrl || s.img);
+    imgLogo = Boolean(s.imgLogo);
   } else {
-    img = Images.khatra.khatra360;
+    // No image of its own: inherit the local record's picture (its real
+    // Google Maps photo, or the Khatra logo fallback) when one matches.
+    if (localRecord) {
+      img = localRecord.img;
+      imgLogo = Boolean(localRecord.imgLogo);
+    } else {
+      img = Images.khatra.khatra360;
+    }
   }
 
   const lat = s.latitude !== undefined && s.latitude !== null ? Number(s.latitude) : (s.lat !== undefined ? Number(s.lat) : null);
@@ -127,6 +141,7 @@ export function adaptStore(s) {
     email: s.email || 'contact@khatra.ma',
     mapsUrl: s.googleMapsUrl || s.mapsUrl || '#',
     img,
+    imgLogo,
     latitude: lat,
     longitude: lng,
     active: s.active !== false,

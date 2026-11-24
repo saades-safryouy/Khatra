@@ -2721,10 +2721,6 @@ html[data-theme="dark"] .home-category-card::after {
 .products-b2b-actions .btn-primary:hover {
   background: var(--linen);
 }
-.products-b2b-actions .btn-whatsapp {
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
 /* Contact Wrap */
 .contact-wrap {
   display: grid;

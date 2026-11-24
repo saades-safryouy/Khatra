@@ -15,7 +15,10 @@ export function FranchiseCoffeeShopPage() {
       {/* Page Header */}
       <div className="page-header">
         <div className="page-header-bg">
-          <img src={Images.khatra.hero} alt="Khatra Coffee Shop" />
+          <picture>
+            <source media="(max-width: 768px)" srcSet={Images.heroes.franchiseCoffeeShop.mobile} />
+            <img src={Images.heroes.franchiseCoffeeShop.desktop} alt="Khatra Coffee Shop" />
+          </picture>
         </div>
         <div className="page-header-overlay" />
         <div className="page-header-inner">

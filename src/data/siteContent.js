@@ -7,11 +7,11 @@ export const DEFAULT_CONTENT = {
 };
 
 export const DEFAULT_SETTINGS = {
-  whatsapp: "212625226140",
+  whatsapp: "212700350019",
   phone: "+212 5 22 00 00 00",
   email: "contact@khatra.ma",
-  address: "Casablanca, Maroc",
-  instagram: "https://instagram.com/khatracoffee",
+  address: "Casablanca 20000",
+  instagram: "https://www.instagram.com/abdo_rml",
   facebook: "https://facebook.com/khatracoffee",
   tiktok: "https://tiktok.com/@khatracoffee"
 };

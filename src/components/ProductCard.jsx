@@ -88,23 +88,16 @@ export function ProductCard({ product, index = 0, lang: langProp }) {
           </div>
         </Link>
 
-        {hasPrice ? (
-          <button
-            type="button"
-            className={`product-card-add${quantity ? ' is-in-cart' : ''}`}
-            onClick={addToCart}
-            aria-label={locale === 'ar' ? `أضف ${product.name} إلى السلة` : `Ajouter ${product.name} au panier`}
-          >
-            {quantity ? `${t.inCart} · ${quantity} — ${t.addMore}` : t.add}
-          </button>
-        ) : (
-          <Link
-            to={`/contact?product=${encodeURIComponent(product.name)}`}
-            className="product-card-add is-quote"
-          >
-            {t.quote}
-          </Link>
-        )}
+        {/* The panier is a quote-request list: every product can be added,
+            priced or not — the WhatsApp devis shortcut lives on the product page. */}
+        <button
+          type="button"
+          className={`product-card-add${quantity ? ' is-in-cart' : ''}`}
+          onClick={addToCart}
+          aria-label={locale === 'ar' ? `أضف ${product.name} إلى السلة` : `Ajouter ${product.name} au panier`}
+        >
+          {quantity ? `${t.inCart} · ${quantity} — ${t.addMore}` : t.add}
+        </button>
       </div>
     </motion.article>
   );

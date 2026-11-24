@@ -10,16 +10,20 @@ function readCart() {
     if (!Array.isArray(stored)) return [];
     return stored.filter((item) =>
       item && item.id !== undefined && typeof item.name === 'string'
-      && item.price !== null && item.price !== undefined && item.price !== '' && Number.isFinite(Number(item.price)) && Number(item.price) >= 0
+      // price may be null: the panier is a quote-request list, so "Prix sur demande"
+      // items (no public price) are valid cart entries too.
+      && (item.price === null || (item.price !== undefined && item.price !== '' && Number.isFinite(Number(item.price)) && Number(item.price) >= 0))
       && Number.isInteger(Number(item.quantity)) && Number(item.quantity) > 0 && Number(item.quantity) <= 10000
     ).map((item) => ({
       id: item.id,
       name: item.name,
       image: typeof item.image === 'string' ? item.image : '',
-      price: Number(item.price),
-      originalPrice: item.originalPrice !== null && item.originalPrice !== undefined && Number.isFinite(Number(item.originalPrice))
-        ? Number(item.originalPrice)
-        : Number(item.price),
+      price: item.price === null ? null : Number(item.price),
+      originalPrice: item.price === null
+        ? null
+        : item.originalPrice !== null && item.originalPrice !== undefined && Number.isFinite(Number(item.originalPrice))
+          ? Number(item.originalPrice)
+          : Number(item.price),
       promo: item.promo !== null && item.promo !== undefined && Number.isFinite(Number(item.promo)) ? Number(item.promo) : null,
       promoExpiresAt: typeof item.promoExpiresAt === 'string' ? item.promoExpiresAt : null,
       quantity: Number(item.quantity),
@@ -42,14 +46,17 @@ export function CartProvider({ children }) {
   }, [items]);
 
   const addProduct = useCallback((product) => {
-    if (product?.price === null || product?.price === undefined || product?.price === '') return false;
-    const price = Number(product?.price);
+    if (!product || product.id === undefined) return false;
+    // No public price is NOT a blocker anymore: the product joins the panier as a
+    // "Prix sur demande" line (price: null) and the quote is priced by the team.
+    const hasPrice = product.price !== null && product.price !== undefined && product.price !== '';
+    const price = hasPrice ? Number(product.price) : null;
     const effectivePrice = Number(product?.effectivePrice);
     const expiration = product?.promoExpiresAt ? new Date(product.promoExpiresAt).getTime() : 0;
-    const promoActive = product?.promoActive === true && Number(product?.promo) > 0
+    const promoActive = hasPrice && product?.promoActive === true && Number(product?.promo) > 0
       && Number(product?.promo) < 100 && expiration > Date.now();
-    const currentPrice = promoActive && Number.isFinite(effectivePrice) ? effectivePrice : price;
-    if (!product || product.id === undefined || !Number.isFinite(price) || price < 0 || !Number.isFinite(currentPrice) || currentPrice < 0) return false;
+    const currentPrice = !hasPrice ? null : promoActive && Number.isFinite(effectivePrice) ? effectivePrice : price;
+    if (hasPrice && (!Number.isFinite(price) || price < 0 || !Number.isFinite(currentPrice) || currentPrice < 0)) return false;
     const existing = items.find((item) => String(item.id) === String(product.id));
     if (existing && existing.quantity >= 10000) return false;
     setItems((current) => {
@@ -102,14 +109,23 @@ export function CartProvider({ children }) {
       const next = current.map((item) => {
         const product = byId.get(String(item.id));
         if (!product) return item;
+        // A quote line without a unit price means "Prix sur demande": keep price
+        // null instead of letting Number(null) fake a 0,00 MAD price.
+        const unitPrice = product.unitPrice === null || product.unitPrice === undefined || !Number.isFinite(Number(product.unitPrice))
+          ? null
+          : Number(product.unitPrice);
         const updated = {
           ...item,
           name: product.productName,
           image: product.productImage ? resolveImageUrl(product.productImage) : item.image,
-          price: Number(product.unitPrice),
-          originalPrice: Number(product.originalPrice),
-          promo: product.promo,
-          promoExpiresAt: product.promoExpiresAt,
+          price: unitPrice,
+          originalPrice: unitPrice === null
+            ? null
+            : product.originalPrice === null || product.originalPrice === undefined || !Number.isFinite(Number(product.originalPrice))
+              ? unitPrice
+              : Number(product.originalPrice),
+          promo: product.promo !== null && product.promo !== undefined && Number.isFinite(Number(product.promo)) ? Number(product.promo) : null,
+          promoExpiresAt: typeof product.promoExpiresAt === 'string' ? product.promoExpiresAt : null,
         };
         if (updated.name === item.name && updated.image === item.image && updated.price === item.price
           && updated.originalPrice === item.originalPrice && updated.promo === item.promo
@@ -125,7 +141,9 @@ export function CartProvider({ children }) {
   const value = useMemo(() => ({
     items,
     count: items.reduce((total, item) => total + item.quantity, 0),
-    total: items.reduce((total, item) => total + Math.round(item.price * 100) * item.quantity, 0) / 100,
+    // Priceless lines (price: null) contribute nothing here — the cart page shows
+    // "Prix sur demande" for the total whenever any line has no public price.
+    total: items.reduce((total, item) => total + (item.price === null || item.price === undefined ? 0 : Math.round(item.price * 100) * item.quantity), 0) / 100,
     addProduct,
     removeProduct,
     setQuantity,
