@@ -6,7 +6,9 @@ import { LanguageProvider } from './context/LanguageContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import { useLang } from './context/LanguageContext';
 import WhatsAppFloating from './components/WhatsAppFloating';
+import MobileBottomNav from './components/MobileBottomNav';
 import ScrollToTop from './components/ScrollToTop';
 import Toast from './components/Toast';
 
@@ -24,12 +26,19 @@ import CartPage from './pages/CartPage';
 
 
 function PublicLayout() {
+  const { lang } = useLang();
   return (
     <>
+      <a className="skip-link" href="#main">
+        {lang === 'ar' ? 'تخطي إلى المحتوى الرئيسي' : 'Aller au contenu principal'}
+      </a>
       <Navbar />
-      <Outlet />
+      <div id="main" tabIndex={-1} className="app-main">
+        <Outlet />
+      </div>
       <Footer />
-      {/* <WhatsAppFloating /> */}
+      <WhatsAppFloating />
+      <MobileBottomNav />
     </>
   );
 }
