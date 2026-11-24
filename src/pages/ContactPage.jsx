@@ -1,4 +1,5 @@
 import React from 'react';
+import Images from '../assets/images';
 import SEO from '../components/SEO';
 import ContactChannels from './contact/ContactChannels';
 import ContactForm from './contact/ContactForm';
@@ -11,7 +12,14 @@ export function ContactPage() {
         description="Contactez l'équipe Khatra pour toute demande de devis, commande professionnelle ou projet de franchise au Maroc."
       />
 
-      <div className="page-header no-image">
+      <div className="page-header">
+        <div className="page-header-bg">
+          <picture>
+            <source media="(max-width: 768px)" srcSet={Images.heroes.contact.mobile} />
+            <img src={Images.heroes.contact.desktop} alt="" />
+          </picture>
+        </div>
+        <div className="page-header-overlay" />
         <div className="page-header-inner">
           <span className="eyebrow">Échange & Partenariat</span>
           <h1>Contactez-nous</h1>

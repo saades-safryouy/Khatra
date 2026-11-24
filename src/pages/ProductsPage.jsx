@@ -2,11 +2,11 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useData } from '../context/DataContext';
 import { motion } from 'framer-motion';
-import { ArrowRight, WhatsApp } from '../components/Icons';
+import { ArrowRight } from '../components/Icons';
 import ProductCard from '../components/ProductCard';
 import Pagination from '../components/Pagination';
 import SEO from '../components/SEO';
-import productsIntroImage from '../assets/design/PRODUCTS_bg.jpeg';
+import Images from '../assets/images';
 import productsApi from '../services/productsApi';
 import { adaptProduct } from '../services/dataAdapters';
 import { useLang } from '../context/LanguageContext';
@@ -14,8 +14,8 @@ import { useLang } from '../context/LanguageContext';
 const PRODUCTS_PER_PAGE = 12;
 
 export function ProductsPage() {
-  const { products, categories: backendCategories, categoriesRaw, settings, loading, error, refreshData } = useData();
-  const { t, lang } = useLang();
+  const { products, categories: backendCategories, categoriesRaw, loading, error, refreshData } = useData();
+  const { t } = useLang();
   const [activeCategory, setActiveCategory] = useState('Tout');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -101,12 +101,6 @@ export function ProductsPage() {
     : fallbackFiltered.slice((displayPage - 1) * PRODUCTS_PER_PAGE, displayPage * PRODUCTS_PER_PAGE);
   const resultCount = pageData ? pageData.meta.total : fallbackFiltered.length;
 
-  const waNum = settings?.whatsapp || '212661000000';
-  const waMessage = lang === 'ar'
-    ? 'مرحباً خاترة، أود الحصول على قائمة أسعار منتجات الأعمال.'
-    : 'Bonjour Khatra, je souhaite recevoir le catalogue tarifaire professionnel B2B.';
-  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waMessage)}`;
-
   const changeCategory = (category) => {
     setActiveCategory(category);
     setCurrentPage(1);
@@ -147,7 +141,10 @@ export function ProductsPage() {
 
       <header className="products-intro">
         <div className="products-intro-bg" aria-hidden="true">
-          <img src={productsIntroImage} alt="" fetchPriority="high" />
+          <picture>
+            <source media="(max-width: 768px)" srcSet={Images.heroes.products.mobile} />
+            <img src={Images.heroes.products.desktop} alt="" fetchPriority="high" />
+          </picture>
         </div>
         <div className="products-intro-inner">
           <span className="eyebrow">Catalogue & Épicerie Pro</span>
@@ -252,9 +249,6 @@ export function ProductsPage() {
             <Link to="/contact" className="btn btn-primary">
               Demander un devis B2B <ArrowRight s={16} />
             </Link>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" className="btn btn-whatsapp">
-              <WhatsApp s={18} color="#fff" /> Commander via WhatsApp
-            </a>
           </div>
         </div>
       </motion.section>

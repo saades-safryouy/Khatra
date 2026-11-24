@@ -19,12 +19,13 @@ const EASE = [0.22, 1, 0.36, 1];
 export function HomePage() {
   const { products } = useData();
   const { t, lang } = useLang();
+
   const { ref: productsRef, isInView: productsInView } = useScrollReveal();
 
   const featured = (products || [])
     .filter((product) => product?.slug && product.status !== 'INACTIVE')
     .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)))
-    .slice(0, 3);
+    .slice(0, 4);
 
   return (
     <div className="home-editorial-page">

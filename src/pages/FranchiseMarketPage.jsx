@@ -15,7 +15,10 @@ export function FranchiseMarketPage() {
       {/* Page Header */}
       <div className="page-header">
         <div className="page-header-bg">
-          <img src={Images.khatra.packaging} alt="Khatra Market Retail" />
+          <picture>
+            <source media="(max-width: 768px)" srcSet={Images.heroes.franchiseMarket.mobile} />
+            <img src={Images.heroes.franchiseMarket.desktop} alt="Khatra Market Retail" />
+          </picture>
         </div>
         <div className="page-header-overlay" />
         <div className="page-header-inner">

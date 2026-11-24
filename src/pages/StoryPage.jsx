@@ -18,7 +18,10 @@ export function StoryPage() {
       {/* Page Header */}
       <div className="page-header">
         <div className="page-header-bg">
-          <img src={Images.khatra.hero} alt="Histoire Khatra" />
+          <picture>
+            <source media="(max-width: 768px)" srcSet={Images.heroes.story.mobile} />
+            <img src={Images.heroes.story.desktop} alt="Histoire Khatra" />
+          </picture>
         </div>
         <div className="page-header-overlay" />
         <div className="page-header-inner">
