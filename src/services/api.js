@@ -1,5 +1,9 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
-const UPLOADS_BASE_URL = import.meta.env.VITE_UPLOADS_URL || 'http://localhost:5000';
+// Uploads are served by the API host under /uploads. If VITE_UPLOADS_URL is
+// not set, derive it from the API URL (strip the trailing /api) instead of
+// falling back to localhost — that fallback silently broke every
+// admin-uploaded image in production (Nov 23, 2026).
+const UPLOADS_BASE_URL = import.meta.env.VITE_UPLOADS_URL || API_BASE_URL.replace(/\/api\/?$/, '');
 export const TOKEN_KEY = 'khatra_token';
 
 export function getToken() {
