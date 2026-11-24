@@ -13,10 +13,12 @@ export function HomeCategories() {
   const { t } = useLang();
 
   const categoryShowcase = [
-  { title: 'Café en grains', subtitle: 'L’origine du goût Khatra', img: Images.khatra.packaging },
-  { title: 'Café signature', subtitle: 'Assemblages pour les pros', img: Images.khatra.khatra360 },
-  { title: 'Sirops & accompagnements', subtitle: 'Des recettes à composer', img: Images.nidsys.syrupTrio },
-  { title: 'Bubbles de fruits', subtitle: 'Une touche fraîche et colorée', img: Images.bubbles.all },
+  { title: 'Café en grains', subtitle: 'L’origine du goût Khatra', img: Images.categories.grain },
+  { title: 'Sirops Nindy’s', subtitle: 'Gourmands & fruités', img: Images.categories.nindys },
+  { title: 'Sirops FO', subtitle: 'Les essentiels du bar', img: Images.categories.syrups },
+  { title: 'Bubbles de fruits', subtitle: 'Une touche fraîche et colorée', img: Images.categories.bubbles },
+  { title: 'Toppings', subtitle: 'La touche finale gourmande', img: Images.categories.toppings },
+  { title: 'Sucre Khatra', subtitle: 'Le compagnon du café', img: Images.categories.sugar },
 ];
 
   return (
