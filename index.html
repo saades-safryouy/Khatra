@@ -2,20 +2,183 @@
 <html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/src/assets/design/khatra_logo_new.png" />
+    <link rel="icon" type="image/png" href="/logo.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Khatra développe un écosystème marocain autour du café, du retail et de la franchise. Partenaire B2B au Maroc.">
+    <meta name="description" content="Café Khatra & Khatra Market à Casablanca : café en grains, sirops, bubbles et toppings pour professionnels et particuliers. Devis B2B sur demande.">
     <meta name="theme-color" content="#5C1D24">
-    <meta property="og:title" content="Khatra | Coffee & Retail Partner au Maroc">
-    <meta property="og:description" content="Khatra développe un écosystème marocain autour du café, du retail et de la franchise.">
+    <link rel="canonical" href="https://khatra-lilac.vercel.app/">
+    <meta property="og:title" content="Khatra — Coffee & Retail Partner au Maroc">
+    <meta property="og:description" content="Café Khatra & Khatra Market à Casablanca : café en grains, sirops, bubbles et toppings pour professionnels et particuliers. Devis B2B sur demande.">
     <meta property="og:type" content="website">
+    <meta property="og:url" content="https://khatra-lilac.vercel.app/">
+    <meta property="og:image" content="https://khatra-lilac.vercel.app/og-image.jpg">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Khatra — Coffee & Retail Partner au Maroc">
+    <meta name="twitter:description" content="Café Khatra & Khatra Market à Casablanca : café en grains, sirops, bubbles et toppings pour professionnels et particuliers. Devis B2B sur demande.">
+    <meta name="twitter:image" content="https://khatra-lilac.vercel.app/og-image.jpg">
     <title>Khatra — Coffee & Retail Partner au Maroc</title>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "GroceryStore",
+      "name": "Khatra Market",
+      "url": "https://khatra-lilac.vercel.app/",
+      "telephone": "+212700350019",
+      "image": "https://khatra-lilac.vercel.app/og-image.jpg",
+      "logo": "https://khatra-lilac.vercel.app/logo.png",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Casablanca",
+        "postalCode": "20000",
+        "addressCountry": "MA"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 33.5634218,
+        "longitude": -7.5928591
+      },
+      "openingHours": "Mo-Su 07:00-00:00"
+    }
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Inter:wght@300;400;500;600&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+      /* Pre-render / crawler shell — replaced by React on mount. */
+      .shell-body { margin: 0; font-family: 'Inter', system-ui, sans-serif; color: #2b2320; background: #faf6f0; }
+      .shell-wrap { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+      .shell-header { background: #5C1D24; padding: 14px 0; }
+      .shell-header .shell-wrap { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+      .shell-header img { height: 44px; width: auto; display: block; }
+      .shell-nav { display: flex; gap: 16px; flex-wrap: wrap; }
+      .shell-nav a { color: #f5ead9; text-decoration: none; font-size: 15px; }
+      .shell-main section { padding: 28px 0 8px; }
+      .shell-eyebrow { color: #5C1D24; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; font-size: 13px; }
+      .shell-h1 { font-family: 'Playfair Display', serif; color: #5C1D24; font-size: 42px; line-height: 1.1; margin: 8px 0 12px; }
+      .shell-h2 { font-family: 'Playfair Display', serif; color: #5C1D24; font-size: 28px; margin: 0 0 10px; }
+      .shell-main p { line-height: 1.6; max-width: 720px; }
+      .shell-main img { max-width: 100%; height: auto; border-radius: 12px; display: block; margin: 16px 0; }
+      .shell-btn { display: inline-block; background: #5C1D24; color: #faf6f0; padding: 12px 22px; border-radius: 999px; text-decoration: none; font-weight: 600; margin: 6px 10px 6px 0; border: 0; cursor: pointer; font-size: 15px; }
+      .shell-btn--light { background: transparent; color: #5C1D24; border: 2px solid #5C1D24; }
+      .shell-list { line-height: 1.9; padding-left: 18px; }
+      .shell-form label { display: block; font-weight: 600; margin: 12px 0 4px; }
+      .shell-form input, .shell-form textarea { width: 100%; max-width: 520px; padding: 10px 12px; border: 1px solid #cbb9a6; border-radius: 8px; font: inherit; box-sizing: border-box; background: #fff; }
+      .shell-footer { background: #5C1D24; color: #f5ead9; margin-top: 40px; padding: 28px 0; }
+      .shell-footer a { color: #f5ead9; }
+      .shell-footer img { height: 40px; width: auto; display: block; margin-bottom: 10px; }
+      .shell-footer nav { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 10px; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="shell-body">
+        <header class="shell-header">
+          <div class="shell-wrap">
+            <a href="/"><img src="/logo.png" alt="Khatra Market — Café Khatra" /></a>
+            <nav class="shell-nav" aria-label="Navigation principale">
+              <a href="/">Accueil</a>
+              <a href="/produits">Produits</a>
+              <a href="/points-de-vente">Points de vente</a>
+              <a href="/franchise">Franchise</a>
+              <a href="/notre-histoire">Notre histoire</a>
+              <a href="/contact">Contact</a>
+              <a href="/panier">Panier</a>
+            </nav>
+          </div>
+        </header>
+
+        <main class="shell-main">
+          <div class="shell-wrap">
+            <section>
+              <p class="shell-eyebrow">L'art du café &amp; de la franchise au Maroc</p>
+              <h1 class="shell-h1">NCHORBOHA KHAAATRA</h1>
+              <p>Khatra développe un écosystème marocain complet : café de spécialité, sirops d'exception, concepts de franchise Coffee Shop et retail Khatra Market.</p>
+              <p>Une offre pensée pour les cafés, restaurants, hôtels et revendeurs professionnels.</p>
+              <p>
+                <a class="shell-btn" href="/produits">Découvrir nos produits</a>
+                <a class="shell-btn shell-btn--light" href="/franchise">Devenir franchisé</a>
+              </p>
+              <img src="/og-image.jpg" alt="Produits Café Khatra : café en grains, sirops, bubbles et toppings" />
+            </section>
+
+            <section>
+              <h2 class="shell-h2">Nos univers café</h2>
+              <p>Six familles de produits pour les professionnels du café et les particuliers, à découvrir dans le catalogue Khatra :</p>
+              <ul class="shell-list">
+                <li><strong>Café en grains</strong> — L'origine du goût Khatra</li>
+                <li><strong>Sirops Nindy's</strong> — Gourmands &amp; fruités</li>
+                <li><strong>Sirops FO</strong> — Les essentiels du bar</li>
+                <li><strong>Bubbles de fruits</strong> — Une touche fraîche et colorée</li>
+                <li><strong>Toppings</strong> — La touche finale gourmande</li>
+                <li><strong>Sucre Khatra</strong> — Le compagnon du café</li>
+              </ul>
+              <p><a class="shell-btn" href="/produits">Découvrir nos produits</a></p>
+            </section>
+
+            <section>
+              <h2 class="shell-h2">Professionnels : demandez votre devis</h2>
+              <p>Vous tenez un café, un restaurant, un hôtel ou une boutique ? Parcourez le catalogue, ajoutez vos produits au panier et envoyez votre demande de devis B2B — ou contactez-nous directement :</p>
+              <p>
+                Par téléphone : <a href="tel:+212700350019">+212 700 35 00 19</a><br />
+                Sur WhatsApp : <a href="https://wa.me/212700350019">Discuter sur WhatsApp</a><br />
+                Par e-mail : <a href="mailto:contact@khatra.ma">contact@khatra.ma</a>
+              </p>
+              <p><a class="shell-btn" href="/produits">Demander un devis B2B</a></p>
+            </section>
+
+            <section>
+              <h2 class="shell-h2">Nos points de vente</h2>
+              <p>Retrouvez Khatra Market à Casablanca, ouvert tous les jours de 07:00 à 00:00, et les coffee shops Khatra partout au Maroc : 58 emplacements référencés sur notre carte. Trouvez le Khatra le plus proche de vous et lancez l'itinéraire.</p>
+              <img src="/points-de-vente.jpg" alt="Points de vente Khatra : Khatra Market et coffee shops Khatra au Maroc" />
+              <p><a class="shell-btn" href="/points-de-vente">Voir les points de vente</a></p>
+            </section>
+
+            <section>
+              <h2 class="shell-h2">Notre histoire</h2>
+              <p>Née au cœur de Casablanca, Khatra incarne l'évolution moderne de la culture café au Maroc. Tout a commencé dans l'effervescence de Hay Sadri à Casablanca : pour tester et peaufiner les recettes au contact réel des amateurs de café, un chariot ambulant au design soigné a sillonné les rues.</p>
+              <blockquote>
+                <p>« Khatra, c'est plus qu'un café. C'est un moment qu'on a envie de revivre. »</p>
+              </blockquote>
+              <p><a class="shell-btn shell-btn--light" href="/notre-histoire">Découvrir notre histoire</a></p>
+            </section>
+
+            <section>
+              <h2 class="shell-h2">Contact</h2>
+              <p>Khatra Market — Casablanca 20000, Maroc. Téléphone / WhatsApp : <a href="tel:+212700350019">+212 700 35 00 19</a> · E-mail : <a href="mailto:contact@khatra.ma">contact@khatra.ma</a></p>
+              <form class="shell-form" action="/contact" method="get">
+                <label for="shell-name">Nom</label>
+                <input id="shell-name" name="name" type="text" autocomplete="name" />
+                <label for="shell-email">E-mail</label>
+                <input id="shell-email" name="email" type="email" autocomplete="email" />
+                <label for="shell-message">Message</label>
+                <textarea id="shell-message" name="message" rows="4"></textarea>
+                <p><button class="shell-btn" type="submit">Envoyer</button></p>
+              </form>
+            </section>
+          </div>
+        </main>
+
+        <footer class="shell-footer">
+          <div class="shell-wrap">
+            <img src="/logo.png" alt="Khatra Market — Café Khatra" />
+            <p><strong>Khatra Market — Café Khatra</strong><br />
+            Casablanca 20000, Maroc<br />
+            Ouvert tous les jours : 07:00 – 00:00<br />
+            Téléphone : <a href="tel:+212700350019">+212 700 35 00 19</a></p>
+            <p>NCHORBOHA KHAAAATRA</p>
+            <nav aria-label="Pied de page">
+              <a href="/">Accueil</a>
+              <a href="/produits">Produits</a>
+              <a href="/points-de-vente">Points de vente</a>
+              <a href="/franchise">Franchise</a>
+              <a href="/notre-histoire">Notre histoire</a>
+              <a href="/contact">Contact</a>
+              <a href="/panier">Panier</a>
+            </nav>
+          </div>
+        </footer>
+      </div>
+    </div>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>
