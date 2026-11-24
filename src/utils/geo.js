@@ -23,7 +23,8 @@ export function calculateDistanceKm(lat1, lon1, lat2, lon2) {
 }
 
 /**
- * Format distance cleanly: "850 m" if < 1km, otherwise "2.4 km"
+ * Format distance cleanly: "850 m" if < 1km, otherwise 1 decimal
+ * with a French decimal comma ("2,3 km").
  */
 export function formatDistance(distanceKm, lang = 'fr') {
   if (distanceKm == null || isNaN(distanceKm)) return '';
@@ -31,8 +32,8 @@ export function formatDistance(distanceKm, lang = 'fr') {
     const meters = Math.round(distanceKm * 1000);
     return lang === 'ar' ? `${meters} م` : `${meters} m`;
   }
-  const km = distanceKm < 10 ? distanceKm.toFixed(1) : Math.round(distanceKm);
-  return lang === 'ar' ? `${km} كم` : `${km} km`;
+  const km = distanceKm.toFixed(1);
+  return lang === 'ar' ? `${km} كم` : `${km.replace('.', ',')} km`;
 }
 
 /**
