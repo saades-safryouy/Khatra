@@ -1,16 +1,9 @@
 import React from 'react';
-import { Phone, Mail, MapPin, WhatsApp } from '../../components/Icons';
+import { Phone, Mail, MapPin } from '../../components/Icons';
 import { useData } from '../../context/DataContext';
-import { useLang } from '../../context/LanguageContext';
 
 export function ContactChannels() {
   const { settings } = useData();
-  const { lang } = useLang();
-  const waNum = settings?.whatsapp || '212661000000';
-  const waMessage = lang === 'ar'
-    ? 'مرحباً خاترة، أود التواصل معكم بشأن مشروع تجاري أو امتياز تجاري.'
-    : 'Bonjour Khatra, je souhaite vous contacter pour un projet B2B / Franchise.';
-  const waUrl = `https://wa.me/${waNum}?text=${encodeURIComponent(waMessage)}`;
 
   return (
     <div className="contact-info">
@@ -21,18 +14,6 @@ export function ContactChannels() {
       </p>
 
       <div className="contact-channels">
-        <div className="contact-channel">
-          <div className="contact-channel-icon" style={{ background: '#dcfce7', color: '#16a34a' }}>
-            <WhatsApp s={22} color="#16a34a" />
-          </div>
-          <div className="contact-channel-info">
-            <span>WhatsApp Business</span>
-            <a href={waUrl} target="_blank" rel="noopener noreferrer" style={{ fontWeight: 600 }}>
-              Démarrer une conversation WhatsApp ↗
-            </a>
-          </div>
-        </div>
-
         <div className="contact-channel">
           <div className="contact-channel-icon">
             <Phone s={20} color="var(--bordeaux)" />
